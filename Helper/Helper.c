@@ -58,8 +58,7 @@ BOOL GetProcessList(PPROCESS_LIST_ENTRY entries, LPDWORD count)
 				{
 					GetProcessIntegrityLevel(process, &entry->IntegrityLevel);
 
-					DWORD userNameLength = 256;
-					if (!GetProcessUserName(process, entry->UserName, &userNameLength))
+					if (!GetProcessUserName(process, entry->UserName, MAX_PATH + 1))
 					{
 						entry->UserName[0] = L'\0';
 					}

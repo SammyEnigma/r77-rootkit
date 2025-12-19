@@ -24,21 +24,21 @@ BOOL GetRandomBytes(LPVOID buffer, DWORD size);
 /// </returns>
 BOOL GetRandomString(PWCHAR str, DWORD length);
 /// <summary>
-/// Converts a LPCWSTR into a null terminated LPCSTR.
+/// Converts a LPCWSTR into a null terminated LPSTR.
 /// </summary>
 /// <param name="str">The LPCWSTR to convert.</param>
 /// <returns>
-/// A newly allocated LPCSTR with the converted LPCWSTR.
+/// A newly allocated LPSTR with the converted LPCWSTR.
 /// </returns>
-LPCSTR ConvertStringToAString(LPCWSTR str);
+LPSTR ConvertStringToAString(LPCWSTR str);
 /// <summary>
-/// Converts a LPCSTR into a null terminated LPCWSTR.
+/// Converts a LPCSTR into a null terminated LPWSTR.
 /// </summary>
 /// <param name="str">The LPCSTR to convert.</param>
 /// <returns>
-/// A newly allocated LPCWSTR with the converted LPCSTR.
+/// A newly allocated LPWSTR with the converted LPCSTR.
 /// </returns>
-LPCWSTR ConvertAStringToString(LPCSTR str);
+LPWSTR ConvertAStringToString(LPCSTR str);
 /// <summary>
 /// Converts a UNICODE_STRING into a null terminated LPWSTR.
 /// </summary>

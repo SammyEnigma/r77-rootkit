@@ -465,9 +465,9 @@ static NTSTATUS NTAPI HookedNtEnumerateKey(HANDLE key, ULONG index, NT_KEY_INFOR
 	}
 
 	HANDLE cacheKey = (HANDLE)TlsGetValue(TlsNtEnumerateKeyCacheKey);
-	ULONG cacheIndex = (ULONG)TlsGetValue(TlsNtEnumerateKeyCacheIndex);
-	ULONG cacheI = (ULONG)TlsGetValue(TlsNtEnumerateKeyCacheI);
-	ULONG cacheCorrectedIndex = (ULONG)TlsGetValue(TlsNtEnumerateKeyCacheCorrectedIndex);
+	ULONG cacheIndex = (ULONG)(UINT_PTR)TlsGetValue(TlsNtEnumerateKeyCacheIndex);
+	ULONG cacheI = (ULONG)(UINT_PTR)TlsGetValue(TlsNtEnumerateKeyCacheI);
+	ULONG cacheCorrectedIndex = (ULONG)(UINT_PTR)TlsGetValue(TlsNtEnumerateKeyCacheCorrectedIndex);
 
 	ULONG i = 0;
 	ULONG correctedIndex = 0;
@@ -540,19 +540,19 @@ static NTSTATUS NTAPI HookedNtEnumerateKey(HANDLE key, ULONG index, NT_KEY_INFOR
 
 	correctedIndex--;
 
-	TlsSetValue(TlsNtEnumerateKeyCacheKey, key);
-	TlsSetValue(TlsNtEnumerateKeyCacheIndex, index);
-	TlsSetValue(TlsNtEnumerateKeyCacheI, i);
-	TlsSetValue(TlsNtEnumerateKeyCacheCorrectedIndex, correctedIndex);
+	TlsSetValue(TlsNtEnumerateKeyCacheKey, (LPVOID)key);
+	TlsSetValue(TlsNtEnumerateKeyCacheIndex, (LPVOID)(UINT_PTR)index);
+	TlsSetValue(TlsNtEnumerateKeyCacheI, (LPVOID)(UINT_PTR)i);
+	TlsSetValue(TlsNtEnumerateKeyCacheCorrectedIndex, (LPVOID)(UINT_PTR)correctedIndex);
 
 	return OriginalNtEnumerateKey(key, correctedIndex, keyInformationClass, keyInformation, keyInformationLength, resultLength);
 }
 static NTSTATUS NTAPI HookedNtEnumerateValueKey(HANDLE key, ULONG index, NT_KEY_VALUE_INFORMATION_CLASS keyValueInformationClass, LPVOID keyValueInformation, ULONG keyValueInformationLength, PULONG resultLength)
 {
 	HANDLE cacheKey = (HANDLE)TlsGetValue(TlsNtEnumerateValueKeyCacheKey);
-	ULONG cacheIndex = (ULONG)TlsGetValue(TlsNtEnumerateValueKeyCacheIndex);
-	ULONG cacheI = (ULONG)TlsGetValue(TlsNtEnumerateValueKeyCacheI);
-	ULONG cacheCorrectedIndex = (ULONG)TlsGetValue(TlsNtEnumerateValueKeyCacheCorrectedIndex);
+	ULONG cacheIndex = (ULONG)(UINT_PTR)TlsGetValue(TlsNtEnumerateValueKeyCacheIndex);
+	ULONG cacheI = (ULONG)(UINT_PTR)TlsGetValue(TlsNtEnumerateValueKeyCacheI);
+	ULONG cacheCorrectedIndex = (ULONG)(UINT_PTR)TlsGetValue(TlsNtEnumerateValueKeyCacheCorrectedIndex);
 
 	ULONG i = 0;
 	ULONG correctedIndex = 0;
@@ -607,10 +607,10 @@ static NTSTATUS NTAPI HookedNtEnumerateValueKey(HANDLE key, ULONG index, NT_KEY_
 
 	correctedIndex--;
 
-	TlsSetValue(TlsNtEnumerateValueKeyCacheKey, key);
-	TlsSetValue(TlsNtEnumerateValueKeyCacheIndex, index);
-	TlsSetValue(TlsNtEnumerateValueKeyCacheI, i);
-	TlsSetValue(TlsNtEnumerateValueKeyCacheCorrectedIndex, correctedIndex);
+	TlsSetValue(TlsNtEnumerateValueKeyCacheKey, (LPVOID)key);
+	TlsSetValue(TlsNtEnumerateValueKeyCacheIndex, (LPVOID)(UINT_PTR)index);
+	TlsSetValue(TlsNtEnumerateValueKeyCacheI, (LPVOID)(UINT_PTR)i);
+	TlsSetValue(TlsNtEnumerateValueKeyCacheCorrectedIndex, (LPVOID)(UINT_PTR)correctedIndex);
 
 	return OriginalNtEnumerateValueKey(key, correctedIndex, keyValueInformationClass, keyValueInformation, keyValueInformationLength, resultLength);
 }
@@ -923,6 +923,8 @@ static DWORD WINAPI WriteChildProcessPipeThread(LPVOID parameter)
 	ReadFile(pipe, &returnValue, sizeof(BYTE), &bytesRead, NULL);
 
 	CloseHandle(pipe);
+
+	return 0;
 }
 static BOOL GetProcessHiddenTimes(PLARGE_INTEGER hiddenKernelTime, PLARGE_INTEGER hiddenUserTime, PLONGLONG hiddenCycleTime)
 {
@@ -1066,8 +1068,8 @@ static VOID FilterEnumServiceStatusA(LPENUM_SERVICE_STATUSA services, LPDWORD se
 {
 	for (DWORD i = 0; i < *servicesReturned; i++)
 	{
-		LPCWSTR serviceNameW = ConvertAStringToString(services[i].lpServiceName);
-		LPCWSTR displayNameW = ConvertAStringToString(services[i].lpDisplayName);
+		LPWSTR serviceNameW = ConvertAStringToString(services[i].lpServiceName);
+		LPWSTR displayNameW = ConvertAStringToString(services[i].lpDisplayName);
 
 		// If hidden, move all following entries up by one and decrease count.
 		if (HasPrefix(serviceNameW) ||
@@ -1106,8 +1108,8 @@ static VOID FilterEnumServiceStatusProcessA(LPENUM_SERVICE_STATUS_PROCESSA servi
 {
 	for (DWORD i = 0; i < *servicesReturned; i++)
 	{
-		LPCWSTR serviceNameW = ConvertAStringToString(services[i].lpServiceName);
-		LPCWSTR displayNameW = ConvertAStringToString(services[i].lpDisplayName);
+		LPWSTR serviceNameW = ConvertAStringToString(services[i].lpServiceName);
+		LPWSTR displayNameW = ConvertAStringToString(services[i].lpDisplayName);
 
 		// If hidden, move all following entries up by one and decrease count.
 		if (HasPrefix(serviceNameW) ||
@@ -1185,7 +1187,7 @@ static DWORD GetProcessIdFromPdhString(LPCWSTR str)
 		{
 			WCHAR pidString[10];
 
-			DWORD strLength = endIndex - str;
+			DWORD strLength = (DWORD)(endIndex - str);
 			i_wmemcpy(pidString, str, strLength);
 			pidString[strLength] = L'\0';
 

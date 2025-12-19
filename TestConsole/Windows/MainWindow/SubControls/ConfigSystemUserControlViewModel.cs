@@ -126,7 +126,7 @@ public sealed class ConfigSystemUserControlViewModel : ViewModel
 	{
 		Expand(TreeNodes.First());
 
-		void Expand(TreeViewNode node)
+		static void Expand(TreeViewNode node)
 		{
 			node.IsExpanded = true;
 			node.Children.ForEach(child => Expand(child));
@@ -137,7 +137,7 @@ public sealed class ConfigSystemUserControlViewModel : ViewModel
 		TreeNodes.First().IsExpanded = true;
 		TreeNodes.First().Children.ForEach(Collapse);
 
-		void Collapse(TreeViewNode node)
+		static void Collapse(TreeViewNode node)
 		{
 			node.IsExpanded = false;
 			node.Children.ForEach(child => Collapse(child));

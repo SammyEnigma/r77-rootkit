@@ -19,10 +19,9 @@ public static class HelperDll
 	public static ProcessListEntry[]? GetProcessList()
 	{
 		ProcessListEntry[] entries = new ProcessListEntry[1000];
-		int count;
 
 		bool result = nint.Size == 4
-			? Helper32Dll.GetProcessList(entries, out count)
+			? Helper32Dll.GetProcessList(entries, out int count)
 			: Helper64Dll.GetProcessList(entries, out count);
 
 		return result ? entries.Take(count).ToArray() : null;

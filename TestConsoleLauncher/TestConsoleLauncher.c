@@ -1,7 +1,6 @@
 #define CUSTOM_ENTRY
 #include "r77win.h"
 #include <Shlwapi.h>
-#include <PathCch.h>
 
 int main()
 {
@@ -35,6 +34,8 @@ int main()
 	startupInfo.cb = sizeof(startupInfo);
 
 	if (!CreateProcessW(targetPath, NULL, NULL, NULL, FALSE, 0, NULL, NULL, &startupInfo, &processInformation)) return 1;
+	CloseHandle(processInformation.hThread);
+	CloseHandle(processInformation.hProcess);
 
 	return 0;
 }

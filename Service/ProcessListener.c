@@ -40,7 +40,7 @@ static DWORD WINAPI NewProcessListenerThreadFunction(LPVOID parameter)
 				}
 			}
 
-			i_memcpy(previousProcesses, currendProcesses, sizeof(DWORD) * 10000);
+			i_memcpy(previousProcesses, currendProcesses, sizeof(DWORD) * currendProcessCount);
 			previousProcessCount = currendProcessCount;
 		}
 

@@ -3,6 +3,7 @@
 #include <Shlwapi.h>
 #include <aclapi.h>
 #include <wchar.h>
+#include <PathCch.h>
 
 BOOL GetRandomBytes(LPVOID buffer, DWORD size)
 {
@@ -506,7 +507,7 @@ BOOL CreateTempFile(LPBYTE file, DWORD fileSize, LPCWSTR extension, LPWSTR resul
 			StrCatW(fileName, L".");
 			StrCatW(fileName, extension);
 
-			if (PathCombineW(resultPath, tempPath, fileName) && WriteFileContent(resultPath, file, fileSize))
+			if (PathCchCombine(resultPath, MAX_PATH, tempPath, fileName) == S_OK && WriteFileContent(resultPath, file, fileSize))
 			{
 				result = TRUE;
 			}

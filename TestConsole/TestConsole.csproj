@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<OutputType>WinExe</OutputType>
-		<TargetFramework>net9.0-windows</TargetFramework>
+		<TargetFramework>net10.0-windows</TargetFramework>
 		<RuntimeIdentifiers>win-x64;win-x86</RuntimeIdentifiers>
 		<Prefer32Bit>false</Prefer32Bit>
 		<Nullable>enable</Nullable>
@@ -110,6 +110,6 @@
 		<Arch Condition=" '$(RuntimeIdentifier)' == 'win-x64' ">x64</Arch>
 	</PropertyGroup>
 	<Target Name="PostPublish" AfterTargets="Publish">
-		<Exec Command="&quot;$(SolutionDir)BuildTask\bin\$(Configuration)\net9.0-windows\BuildTask.exe&quot; &quot;$(SolutionDir)$Build\TestConsole\$(Arch)\TestConsole.exe&quot; -r77helper" />
+		<Exec Command="&quot;$(SolutionDir)BuildTask\bin\$(Configuration)\net10.0-windows\BuildTask.exe&quot; &quot;$(SolutionDir)$Build\TestConsole\$(Arch)\TestConsole.exe&quot; -r77helper" />
 	</Target>
 </Project>

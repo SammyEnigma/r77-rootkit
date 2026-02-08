@@ -8,19 +8,11 @@ namespace TestConsole.Model;
 
 public abstract class ViewModel : ObservableObject
 {
-	private DelegateCommand<string>? _OpenUrlCommand;
-	private DelegateCommand? _ExitCommand;
-	private DelegateCommand? _ElevateCommand;
-	public DelegateCommand<string> OpenUrlCommand => _OpenUrlCommand ??= new(OpenUrlCommand_Execute!);
-	public DelegateCommand ExitCommand => _ExitCommand ??= new(ExitCommand_Execute);
-	public DelegateCommand ElevateCommand => _ElevateCommand ??= new(ElevateCommand_Execute, ElevateCommand_CanExecute);
+	public DelegateCommand<string> OpenUrlCommand => field ??= new(OpenUrlCommand_Execute!);
+	public DelegateCommand ExitCommand => field ??= new(ExitCommand_Execute);
+	public DelegateCommand ElevateCommand => field ??= new(ElevateCommand_Execute, ElevateCommand_CanExecute);
 
-	private bool _ShowBusyIndicator;
-	public bool ShowBusyIndicator
-	{
-		get => _ShowBusyIndicator;
-		set => Set(ref _ShowBusyIndicator, value);
-	}
+	public bool ShowBusyIndicator { get; set => Set(ref field, value); }
 
 	public virtual async Task Async(Task task)
 	{

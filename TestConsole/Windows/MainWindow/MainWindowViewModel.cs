@@ -14,16 +14,11 @@ public sealed class MainWindowViewModel : ViewModel
 	public static MainWindowViewModel? Singleton { get; private set; }
 	public MainWindow View { get; set; }
 
-	private DelegateCommand<string>? _RunCommand;
-	private DelegateCommand? _InjectAllCommand;
-	private DelegateCommand? _DetachAllCommand;
-	private DelegateCommand? _DocumentationCommand;
-	private DelegateCommand? _AboutCommand;
-	public DelegateCommand<string> RunCommand => _RunCommand ??= new(RunCommand_Execute!);
-	public DelegateCommand InjectAllCommand => _InjectAllCommand ??= new(InjectAllCommand_Execute);
-	public DelegateCommand DetachAllCommand => _DetachAllCommand ??= new(DetachAllCommand_Execute);
-	public DelegateCommand DocumentationCommand => _DocumentationCommand ??= new(DocumentationCommand_Execute);
-	public DelegateCommand AboutCommand => _AboutCommand ??= new(AboutCommand_Execute);
+	public DelegateCommand<string> RunCommand => field ??= new(RunCommand_Execute!);
+	public DelegateCommand InjectAllCommand => field ??= new(InjectAllCommand_Execute);
+	public DelegateCommand DetachAllCommand => field ??= new(DetachAllCommand_Execute);
+	public DelegateCommand DocumentationCommand => field ??= new(DocumentationCommand_Execute);
+	public DelegateCommand AboutCommand => field ??= new(AboutCommand_Execute);
 
 	public MainWindowViewModel(MainWindow view)
 	{

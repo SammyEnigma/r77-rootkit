@@ -190,7 +190,7 @@ public static class ConfigSystem
 		using RegistryKey? configKey = GetConfigSystemKey();
 		using RegistryKey? key = configKey?.OpenSubKey(directoryName, true);
 
-		if (key != null && key.GetValueNames().Contains(entryName))
+		if (key?.GetValueNames().Contains(entryName) == true)
 		{
 			key.DeleteValue(entryName);
 

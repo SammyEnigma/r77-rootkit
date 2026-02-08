@@ -10,15 +10,9 @@ public sealed class R77ServiceUserControlViewModel : ViewModel
 	public static R77ServiceUserControlViewModel? Singleton { get; private set; }
 	public R77ServiceUserControl View { get; set; }
 
-	private DelegateCommand? _OpenControlPipeTabPageCommand;
-	public DelegateCommand OpenControlPipeTabPageCommand => _OpenControlPipeTabPageCommand ??= new(OpenControlPipeTabPageCommand_Execute);
+	public DelegateCommand OpenControlPipeTabPageCommand => field ??= new(OpenControlPipeTabPageCommand_Execute);
 
-	private bool _IsR77ServiceRunning;
-	public bool IsR77ServiceRunning
-	{
-		get => _IsR77ServiceRunning;
-		set => Set(ref _IsR77ServiceRunning, value);
-	}
+	public bool IsR77ServiceRunning { get; set => Set(ref field, value); }
 
 	public R77ServiceUserControlViewModel(R77ServiceUserControl view)
 	{

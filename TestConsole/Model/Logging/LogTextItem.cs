@@ -2,7 +2,7 @@
 
 public sealed class LogTextItem : LogItem
 {
-	public string Text { get; private init; }
+	public string Text { get; }
 
 	public LogTextItem(string text)
 	{

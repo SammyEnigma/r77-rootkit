@@ -2,8 +2,8 @@
 
 public sealed class LogLinkItem : LogItem
 {
-	public string Text { get; private init; }
-	public Action Action { get; private init; }
+	public string Text { get; }
+	public Action Action { get; }
 
 	public LogLinkItem(string text, Action action)
 	{

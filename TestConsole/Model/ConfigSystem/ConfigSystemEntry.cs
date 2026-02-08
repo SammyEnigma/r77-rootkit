@@ -10,11 +10,11 @@ public sealed class ConfigSystemEntry
 	/// <summary>
 	/// Gets the parent <see cref="ConfigSystemDirectory" /> of this entry.
 	/// </summary>
-	public ConfigSystemDirectory Directory { get; private set; }
+	public ConfigSystemDirectory Directory { get; }
 	/// <summary>
 	/// Gets the <see cref="RegistryValueKind" /> of the registry value that represents this entry.
 	/// </summary>
-	public RegistryValueKind Type { get; private set; }
+	public RegistryValueKind Type { get; }
 	/// <summary>
 	/// Gets or sets the name of the registry value that represents this entry.
 	/// </summary>

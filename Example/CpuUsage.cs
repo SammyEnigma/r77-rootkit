@@ -32,7 +32,10 @@ namespace Example
 						while (true)
 						{
 							int activeTime;
-							lock (CurrentCpuUsage) activeTime = (int)CurrentCpuUsage * 10;
+							lock (CurrentCpuUsage)
+							{
+								activeTime = (int)CurrentCpuUsage * 10;
+							}
 
 							// CPU usage during active time
 							stopwatch.Restart();
@@ -66,7 +69,10 @@ namespace Example
 		/// <param name="cpuUsage">The CPU usage to be simulated in percent. This value should fall between 0 and 100.</param>
 		public static void SetCpuUsage(int cpuUsage)
 		{
-			lock (CurrentCpuUsage) CurrentCpuUsage = cpuUsage;
+			lock (CurrentCpuUsage)
+			{
+				CurrentCpuUsage = cpuUsage;
+			}
 		}
 	}
 }

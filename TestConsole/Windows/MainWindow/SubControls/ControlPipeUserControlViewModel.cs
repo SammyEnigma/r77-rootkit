@@ -12,87 +12,29 @@ public sealed class ControlPipeUserControlViewModel : ViewModel
 {
 	public ControlPipeUserControl View { get; set; }
 
-	private DelegateCommand? _R77TerminateServiceCommand;
-	private DelegateCommand? _R77UninstallCommand;
-	private DelegateCommand? _R77PauseInjectionCommand;
-	private DelegateCommand? _R77ResumeInjectionCommand;
-	private DelegateCommand? _ProcessesInjectCommand;
-	private DelegateCommand? _ProcessesInjectAllCommand;
-	private DelegateCommand? _ProcessesDetachCommand;
-	private DelegateCommand? _ProcessesDetachAllCommand;
-	private DelegateCommand? _ProcessesTerminateIdCommand;
-	private DelegateCommand? _ProcessesTerminateNameCommand;
-	private DelegateCommand? _UserShellExecCommand;
-	private DelegateCommand? _UserRunPECommand;
-	private DelegateCommand? _SystemBsodCommand;
-	public DelegateCommand R77TerminateServiceCommand => _R77TerminateServiceCommand ??= new(R77TerminateServiceCommand_Execute);
-	public DelegateCommand R77UninstallCommand => _R77UninstallCommand ??= new(R77UninstallCommand_Execute);
-	public DelegateCommand R77PauseInjectionCommand => _R77PauseInjectionCommand ??= new(R77PauseInjectionCommand_Execute);
-	public DelegateCommand R77ResumeInjectionCommand => _R77ResumeInjectionCommand ??= new(R77ResumeInjectionCommand_Execute);
-	public DelegateCommand ProcessesInjectCommand => _ProcessesInjectCommand ??= new(ProcessesInjectCommand_Execute, ProcessesInjectCommand_CanExecute);
-	public DelegateCommand ProcessesInjectAllCommand => _ProcessesInjectAllCommand ??= new(ProcessesInjectAllCommand_Execute);
-	public DelegateCommand ProcessesDetachCommand => _ProcessesDetachCommand ??= new(ProcessesDetachCommand_Execute, ProcessesDetachCommand_CanExecute);
-	public DelegateCommand ProcessesDetachAllCommand => _ProcessesDetachAllCommand ??= new(ProcessesDetachAllCommand_Execute);
-	public DelegateCommand ProcessesTerminateIdCommand => _ProcessesTerminateIdCommand ??= new(ProcessesTerminateIdCommand_Execute, ProcessesTerminateIdCommand_CanExecute);
-	public DelegateCommand ProcessesTerminateNameCommand => _ProcessesTerminateNameCommand ??= new(ProcessesTerminateNameCommand_Execute, ProcessesTerminateNameCommand_CanExecute);
-	public DelegateCommand UserShellExecCommand => _UserShellExecCommand ??= new(UserShellExecCommand_Execute);
-	public DelegateCommand UserRunPECommand => _UserRunPECommand ??= new(UserRunPECommand_Execute);
-	public DelegateCommand SystemBsodCommand => _SystemBsodCommand ??= new(SystemBsodCommand_Execute);
+	public DelegateCommand R77TerminateServiceCommand => field ??= new(R77TerminateServiceCommand_Execute);
+	public DelegateCommand R77UninstallCommand => field ??= new(R77UninstallCommand_Execute);
+	public DelegateCommand R77PauseInjectionCommand => field ??= new(R77PauseInjectionCommand_Execute);
+	public DelegateCommand R77ResumeInjectionCommand => field ??= new(R77ResumeInjectionCommand_Execute);
+	public DelegateCommand ProcessesInjectCommand => field ??= new(ProcessesInjectCommand_Execute, ProcessesInjectCommand_CanExecute);
+	public DelegateCommand ProcessesInjectAllCommand => field ??= new(ProcessesInjectAllCommand_Execute);
+	public DelegateCommand ProcessesDetachCommand => field ??= new(ProcessesDetachCommand_Execute, ProcessesDetachCommand_CanExecute);
+	public DelegateCommand ProcessesDetachAllCommand => field ??= new(ProcessesDetachAllCommand_Execute);
+	public DelegateCommand ProcessesTerminateIdCommand => field ??= new(ProcessesTerminateIdCommand_Execute, ProcessesTerminateIdCommand_CanExecute);
+	public DelegateCommand ProcessesTerminateNameCommand => field ??= new(ProcessesTerminateNameCommand_Execute, ProcessesTerminateNameCommand_CanExecute);
+	public DelegateCommand UserShellExecCommand => field ??= new(UserShellExecCommand_Execute);
+	public DelegateCommand UserRunPECommand => field ??= new(UserRunPECommand_Execute);
+	public DelegateCommand SystemBsodCommand => field ??= new(SystemBsodCommand_Execute);
 
-	private bool _IsR77ServiceRunning;
-	private int? _InjectProcessId;
-	private int? _DetachProcessId;
-	private int? _TerminateProcessId;
-	private string? _TerminateProcessName;
-	private string? _ShellExecPath;
-	private string? _ShellExecCommandLine;
-	private string? _RunPETargetPath;
-	private string? _RunPEPayloadPath;
-	public bool IsR77ServiceRunning
-	{
-		get => _IsR77ServiceRunning;
-		set => Set(ref _IsR77ServiceRunning, value);
-	}
-	public int? InjectProcessId
-	{
-		get => _InjectProcessId;
-		set => Set(ref _InjectProcessId, value);
-	}
-	public int? DetachProcessId
-	{
-		get => _DetachProcessId;
-		set => Set(ref _DetachProcessId, value);
-	}
-	public int? TerminateProcessId
-	{
-		get => _TerminateProcessId;
-		set => Set(ref _TerminateProcessId, value);
-	}
-	public string? TerminateProcessName
-	{
-		get => _TerminateProcessName;
-		set => Set(ref _TerminateProcessName, value);
-	}
-	public string? ShellExecPath
-	{
-		get => _ShellExecPath;
-		set => Set(ref _ShellExecPath, value);
-	}
-	public string? ShellExecCommandLine
-	{
-		get => _ShellExecCommandLine;
-		set => Set(ref _ShellExecCommandLine, value);
-	}
-	public string? RunPETargetPath
-	{
-		get => _RunPETargetPath;
-		set => Set(ref _RunPETargetPath, value);
-	}
-	public string? RunPEPayloadPath
-	{
-		get => _RunPEPayloadPath;
-		set => Set(ref _RunPEPayloadPath, value);
-	}
+	public bool IsR77ServiceRunning { get; set => Set(ref field, value); }
+	public int? InjectProcessId { get; set => Set(ref field, value); }
+	public int? DetachProcessId { get; set => Set(ref field, value); }
+	public int? TerminateProcessId { get; set => Set(ref field, value); }
+	public string? TerminateProcessName { get; set => Set(ref field, value); }
+	public string? ShellExecPath { get; set => Set(ref field, value); }
+	public string? ShellExecCommandLine { get; set => Set(ref field, value); }
+	public string? RunPETargetPath { get; set => Set(ref field, value); }
+	public string? RunPEPayloadPath { get; set => Set(ref field, value); }
 
 	public ControlPipeUserControlViewModel(ControlPipeUserControl view)
 	{

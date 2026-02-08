@@ -7,117 +7,57 @@ namespace TestConsole.Model;
 
 public sealed class ProcessModel : ObservableObject, IEquatable<ProcessModel>
 {
-	private int _Id;
-	private string _Name = "";
-	private bool? _Is64Bit;
-	private ProcessIntegrityLevel? _IntegrityLevel;
-	private string _User = "";
-	private Icon? _Icon;
-	private bool _CanInject;
-	private bool _IsInjected;
-	private bool _IsR77Service;
-	private bool _IsHelper;
-	private bool _IsHiddenById;
-	private ProcessStatus _Status = ProcessStatus.Running;
 	/// <summary>
 	/// The process ID.
 	/// </summary>
-	public int Id
-	{
-		get => _Id;
-		set => Set(ref _Id, value);
-	}
+	public int Id { get; set => Set(ref field, value); }
 	/// <summary>
 	/// The name of the process.
 	/// </summary>
-	public string Name
-	{
-		get => _Name;
-		set => Set(ref _Name, value);
-	}
+	public string Name { get; set => Set(ref field, value); } = "";
 	/// <summary>
 	/// A <see cref="bool" /> value, indicating whether the process is 64-bit or 32-bit.
 	/// If this value is <see langword="null" />, the bitness could not be determined.
 	/// </summary>
-	public bool? Is64Bit
-	{
-		get => _Is64Bit;
-		set => Set(ref _Is64Bit, value);
-	}
+	public bool? Is64Bit { get; set => Set(ref field, value); }
 	/// <summary>
 	/// The integrity level of the process.
 	/// If this value is <see langword="null" />, the integrity level could not be determined.
 	/// </summary>
-	public ProcessIntegrityLevel? IntegrityLevel
-	{
-		get => _IntegrityLevel;
-		set => Set(ref _IntegrityLevel, value);
-	}
+	public ProcessIntegrityLevel? IntegrityLevel { get; set => Set(ref field, value); }
 	/// <summary>
 	/// The username of the process.
 	/// If this value is <see langword="null" />, the username could not be determined.
 	/// </summary>
-	public string User
-	{
-		get => _User;
-		set => Set(ref _User, value);
-	}
+	public string User { get; set => Set(ref field, value); } = "";
 	/// <summary>
 	/// The icon of the executable file.
 	/// </summary>
-	public Icon? Icon
-	{
-		get => _Icon;
-		set => Set(ref _Icon, value);
-	}
+	public Icon? Icon { get; set => Set(ref field, value); }
 	/// <summary>
 	/// A <see cref="bool" /> value, indicating whether the process can be injected.
 	/// </summary>
-	public bool CanInject
-	{
-		get => _CanInject;
-		set => Set(ref _CanInject, value);
-	}
+	public bool CanInject { get; set => Set(ref field, value); }
 	/// <summary>
 	/// A <see cref="bool" /> value, indicating whether the process is injected.
 	/// </summary>
-	public bool IsInjected
-	{
-		get => _IsInjected;
-		set => Set(ref _IsInjected, value);
-	}
+	public bool IsInjected { get; set => Set(ref field, value); }
 	/// <summary>
 	/// A <see cref="bool" /> value, indicating whether the process is the r77 service process.
 	/// </summary>
-	public bool IsR77Service
-	{
-		get => _IsR77Service;
-		set => Set(ref _IsR77Service, value);
-	}
+	public bool IsR77Service { get; set => Set(ref field, value); }
 	/// <summary>
 	/// A <see cref="bool" /> value, indicating whether the process is an r77 helper process.
 	/// </summary>
-	public bool IsHelper
-	{
-		get => _IsHelper;
-		set => Set(ref _IsHelper, value);
-	}
+	public bool IsHelper { get; set => Set(ref field, value); }
 	/// <summary>
 	/// A <see cref="bool" /> value, indicating whether the process is hidden by ID.
 	/// </summary>
-	public bool IsHiddenById
-	{
-		get => _IsHiddenById;
-		set => Set(ref _IsHiddenById, value);
-	}
+	public bool IsHiddenById { get; set => Set(ref field, value); }
 	/// <summary>
 	/// A <see cref="ProcessStatus" /> value, indicating whether the process is recently created, or recently terminated.
 	/// </summary>
-	public ProcessStatus Status
-	{
-		get => _Status;
-		set => Set(ref _Status, value);
-	}
+	public ProcessStatus Status { get; set => Set(ref field, value); } = ProcessStatus.Running;
 	public string SortKey => $"{Name}_{Id}";
 
 	/// <summary>

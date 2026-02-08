@@ -11,27 +11,13 @@ public sealed class ProcessListUserControlViewModel : ViewModel
 	public static ProcessListUserControlViewModel? Singleton { get; private set; }
 	public ProcessListUserControl View { get; set; }
 
-	private DelegateCommand<ProcessModel>? _InjectCommand;
-	private DelegateCommand<ProcessModel>? _DetachCommand;
-	private DelegateCommand<ProcessModel>? _HideCommand;
-	private DelegateCommand<ProcessModel>? _UnhideCommand;
-	public DelegateCommand<ProcessModel> InjectCommand => _InjectCommand ??= new(InjectCommand_Execute!);
-	public DelegateCommand<ProcessModel> DetachCommand => _DetachCommand ??= new(DetachCommand_Execute!);
-	public DelegateCommand<ProcessModel> HideCommand => _HideCommand ??= new(HideCommand_Execute!);
-	public DelegateCommand<ProcessModel> UnhideCommand => _UnhideCommand ??= new(UnhideCommand_Execute!);
+	public DelegateCommand<ProcessModel> InjectCommand => field ??= new(InjectCommand_Execute!);
+	public DelegateCommand<ProcessModel> DetachCommand => field ??= new(DetachCommand_Execute!);
+	public DelegateCommand<ProcessModel> HideCommand => field ??= new(HideCommand_Execute!);
+	public DelegateCommand<ProcessModel> UnhideCommand => field ??= new(UnhideCommand_Execute!);
 
-	private ObservableCollection<ProcessModel> _Processes = [];
-	private ProcessModel? _SelectedProcess;
-	public ObservableCollection<ProcessModel> Processes
-	{
-		get => _Processes;
-		set => Set(ref _Processes, value);
-	}
-	public ProcessModel? SelectedProcess
-	{
-		get => _SelectedProcess;
-		set => Set(ref _SelectedProcess, value);
-	}
+	public ObservableCollection<ProcessModel> Processes { get; set => Set(ref field, value); } = [];
+	public ProcessModel? SelectedProcess { get; set => Set(ref field, value); }
 
 	public ProcessListUserControlViewModel(ProcessListUserControl view)
 	{

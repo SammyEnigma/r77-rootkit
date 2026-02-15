@@ -25,10 +25,10 @@
 		<Copyright>© bytecode77, 2025.</Copyright>
 	</PropertyGroup>
 	<ItemGroup>
-		<PackageReference Include="BytecodeApi.Rest" Version="4.0.0" />
-		<PackageReference Include="BytecodeApi.Win32" Version="4.0.0" />
-		<PackageReference Include="BytecodeApi.Wpf" Version="4.0.1" />
-		<PackageReference Include="BytecodeApi.Wpf.Cui" Version="4.0.2" />
+		<PackageReference Include="BytecodeApi.Rest" Version="5.0.0" />
+		<PackageReference Include="BytecodeApi.Win32" Version="5.0.0" />
+		<PackageReference Include="BytecodeApi.Wpf" Version="5.0.0" />
+		<PackageReference Include="BytecodeApi.Wpf.Cui" Version="5.0.0" />
 	</ItemGroup>
 	<ItemGroup>
 		<Compile Include="..\Global\R77Const.cs" Link="Properties\R77Const.cs" />

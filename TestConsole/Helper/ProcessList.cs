@@ -3,6 +3,7 @@ using BytecodeApi.Extensions;
 using BytecodeApi.IO;
 using Global;
 using Microsoft.Win32;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -71,7 +72,7 @@ internal static class ProcessList
 				return false;
 			}
 
-			if (!ProcessEx.IsRunning(process.Id))
+			if (!Process.IsRunning(process.Id))
 			{
 				Log.Warning(
 					new LogFileItem(process.Name),
@@ -130,7 +131,7 @@ internal static class ProcessList
 	{
 		return await Task.Run(() =>
 		{
-			if (!ProcessEx.IsRunning(process.Id))
+			if (!Process.IsRunning(process.Id))
 			{
 				Log.Warning(
 					new LogFileItem(process.Name),

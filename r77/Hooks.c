@@ -8,7 +8,6 @@
 #include "detours.h"
 #include <Shlwapi.h>
 #include <wchar.h>
-#include <PathCch.h>
 
 static NT_NTQUERYSYSTEMINFORMATION OriginalNtQuerySystemInformation;
 static NT_NTRESUMETHREAD OriginalNtResumeThread;
@@ -966,16 +965,16 @@ static BOOL GetProcessHiddenTimes(PLARGE_INTEGER hiddenKernelTime, PLARGE_INTEGE
 }
 static LPWSTR CreatePath(LPWSTR result, LPCWSTR directoryName, LPCWSTR fileName, DWORD resultLength)
 {
-	// PathCchCombine cannot be used with the directory name "\\.\pipe\".
+	// PathCombineW cannot be used with the directory name "\\.\pipe\".
 	if (!StrCmpNIW(directoryName, L"\\\\.\\pipe\\", resultLength))
 	{
 		StrCpyNW(result, directoryName, resultLength);
 		StrNCatW(result, fileName, resultLength);
 		return result;
 	}
-	else
+	else if (lstrlenW(directoryName) + lstrlenW(fileName) + 1 < resultLength)
 	{
-		PathCchCombine(result, resultLength, directoryName, fileName);
+		PathCombineW(result, directoryName, fileName);
 		return result;
 	}
 }

@@ -1,7 +1,6 @@
 #define CUSTOM_ENTRY
 #include "r77win.h"
 #include <Shlwapi.h>
-#include <PathCch.h>
 
 int main()
 {
@@ -15,7 +14,7 @@ int main()
 	if (!PathRemoveFileSpecW(applicationDirectory)) return 1;
 
 	LPCWSTR targetFileName = Is64BitOperatingSystem() ? L"TestConsole\\x64\\TestConsole.exe" : L"TestConsole\\x86\\TestConsole.exe";
-	if (PathCchCombine(targetPath, MAX_PATH, applicationDirectory, targetFileName) != S_OK) return 1;
+	if (!PathCombineW(targetPath, applicationDirectory, targetFileName)) return 1;
 
 	if (!PathFileExistsW(targetPath))
 	{

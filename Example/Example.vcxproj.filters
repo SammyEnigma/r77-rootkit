@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="Example.cpp" />
+    <ClCompile Include="CpuUsage.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Example.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="CpuUsage.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Example.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Example.ico" />
+    <Image Include="Resources\Example32.png">
+      <Filter>Resources</Filter>
+    </Image>
+    <Image Include="Resources\Help16.png">
+      <Filter>Resources</Filter>
+    </Image>
+    <Image Include="Resources\Warning16.png">
+      <Filter>Resources</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Resources">
+      <UniqueIdentifier>{b159945d-1e18-467a-a043-231fed0759ac}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

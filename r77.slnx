@@ -41,7 +41,9 @@
     <Project Path="Unhook/Unhook.vcxitems" Id="631adcf8-7809-4c45-b29a-30ecf33592d6" />
   </Folder>
   <Folder Name="/TestEnvironment/">
-    <Project Path="Example/Example.csproj" Id="86f8c733-f773-4ad8-9282-3f99953261fd" />
+    <Project Path="Example/Example.vcxproj" Id="6d733fe8-f47f-48c7-a43b-afb60618dfd7">
+      <Platform Solution="Release|*" Project="Win32" />
+    </Project>
     <Project Path="Helper/Helper.vcxitems" Id="e6543f7a-4e58-4c55-975e-ed975481ebe8" />
     <Project Path="Helper32/Helper32.vcxproj" Id="2d6fdd44-39b1-4ff8-8ae0-60a6b0979f5f">
       <BuildType Project="Release" />

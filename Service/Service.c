@@ -99,12 +99,14 @@ VOID UninitializeService()
 	if (ChildProcessListenerThread)
 	{
 		TerminateThread(ChildProcessListenerThread, 0);
+		CloseHandle(ChildProcessListenerThread);
 		ChildProcessListenerThread = NULL;
 	}
 
 	if (NewProcessListenerThread)
 	{
 		TerminateThread(NewProcessListenerThread, 0);
+		CloseHandle(NewProcessListenerThread);
 		NewProcessListenerThread = NULL;
 	}
 
@@ -117,6 +119,7 @@ VOID UninitializeService()
 		// thus, this function will cease to execute.
 
 		TerminateThread(ControlPipeListenerThread, 0);
+		CloseHandle(ControlPipeListenerThread);
 		ControlPipeListenerThread = NULL;
 	}
 }

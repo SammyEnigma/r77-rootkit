@@ -275,6 +275,7 @@ static NTSTATUS NTAPI HookedNtResumeThread(HANDLE thread, PULONG suspendCount)
 					{
 						// WriteFile got stuck.
 						TerminateThread(thread, 0);
+						CloseHandle(thread);
 					}
 				}
 			}

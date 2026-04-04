@@ -2,6 +2,7 @@
 #include "resource.h"
 #include "CpuUsage.h"
 #include "r77def.h"
+#include <Shlwapi.h>
 
 extern "C"
 {
@@ -10,12 +11,11 @@ extern "C"
 
 int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
-	WCHAR fileName[100];
+	WCHAR executablePath[MAX_PATH + 1];
+	GetModuleFileNameW(NULL, executablePath, MAX_PATH);
+	LPWSTR fileName = PathFindFileNameW(executablePath);
+
 	WCHAR processId[100];
-
-	GetModuleFileNameW(NULL, fileName, MAX_PATH);
-	StrCpyW(fileName, PathFindFileNameW(fileName));
-
 	Int32ToStrW(GetCurrentProcessId(), processId);
 
 	StrCpyW(Title, fileName);
@@ -65,8 +65,8 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 		wc.lpszClassName,
 		L"r77 Rootkit Example File",
 		WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX,
-		(GetSystemMetrics(SM_CXSCREEN) - WindowWidth) / 2,
-		(GetSystemMetrics(SM_CYSCREEN) - WindowHeight) / 2,
+		CW_USEDEFAULT,
+		CW_USEDEFAULT,
 		WindowWidth,
 		WindowHeight,
 		NULL,
@@ -80,9 +80,9 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	TitleFont = CreateFontW(26, 0, 0, 0, FW_DONTCARE, FALSE, FALSE, FALSE, ANSI_CHARSET, OUT_TT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE, L"Segoe UI");
 	WhiteBrush = CreateSolidBrush(RGB(255, 255, 255));
 	LightGrayBrush = CreateSolidBrush(RGB(240, 240, 240));
-	LogoImage = LoadImageFromResource(IDB_EXAMPLE32, L"PNG");
-	HelpImage = LoadImageFromResource(IDB_HELP16, L"PNG");
-	WarningImage = LoadImageFromResource(IDB_WARNING16, L"PNG");
+	LogoImage = GetImageResource(IDB_EXAMPLE32, L"PNG");
+	HelpImage = GetImageResource(IDB_HELP16, L"PNG");
+	WarningImage = GetImageResource(IDB_WARNING16, L"PNG");
 
 	RECT windowRect = { 0, 0, WindowWidth, WindowHeight };
 	AdjustWindowRect(&windowRect, GetWindowLongW(Window, GWL_STYLE), FALSE);
@@ -121,7 +121,6 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	GdiplusShutdown(gdiToken);
 	return 0;
 }
-
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	switch (msg)
@@ -220,43 +219,35 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
 	return 0;
 }
-HBITMAP LoadImageFromResource(DWORD resourceID, LPCWSTR type)
+
+HBITMAP GetImageResource(DWORD resourceID, LPCWSTR type)
 {
 	LPBYTE resourceData;
 	DWORD resourceSize;
 
 	if (GetResource(resourceID, type, &resourceData, &resourceSize))
 	{
-		Bitmap *bitmap = LoadImageFromBinary(resourceData, resourceSize);
-		if (bitmap)
-		{
-			HBITMAP hBitmap;
-			bitmap->GetHBITMAP(Color::Transparent, &hBitmap);
-			return hBitmap;
-		}
+		return CreateImage(resourceData, resourceSize);
 	}
 
 	return NULL;
 }
-Bitmap* LoadImageFromBinary(LPBYTE data, DWORD size)
+HBITMAP CreateImage(LPCBYTE data, DWORD size)
 {
-	Bitmap *result = NULL;
+	HBITMAP result = NULL;
 
-	HGLOBAL imageData = GlobalAlloc(GMEM_MOVEABLE, size);
-	if (imageData)
+	IStream *imageStream = SHCreateMemStream(data, size);
+	if (imageStream)
 	{
-		CopyMemory(GlobalLock(imageData), data, size);
-		GlobalUnlock(imageData);
+		Bitmap *bitmap = new Bitmap(imageStream);
 
-		IStream *imageStream;
-		CreateStreamOnHGlobal(imageData, TRUE, &imageStream);
-		if (imageStream)
+		if (bitmap->GetHBITMAP(Color::Transparent, &result) != Ok)
 		{
-			result = new Bitmap(imageStream);
-			imageStream->Release();
+			result = NULL;
 		}
 
-		GlobalFree(imageData);
+		delete bitmap;
+		imageStream->Release();
 	}
 
 	return result;

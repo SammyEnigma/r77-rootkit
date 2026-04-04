@@ -30,7 +30,7 @@ VOID UninitializeCpuUsage()
 		CloseHandle(CpuUsageThreads[i]);
 	}
 
-	delete CpuUsageThreads;
+	delete[] CpuUsageThreads;
 }
 static DWORD WINAPI CpuUsageThreadFunc(LPVOID parameter)
 {

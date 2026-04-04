@@ -228,7 +228,7 @@ BOOL GetProcessFileName(DWORD processId, PWCHAR fileName, DWORD fileNameLength)
 		WCHAR path[MAX_PATH + 1];
 		if (GetProcessImageFileNameW(process, path, MAX_PATH))
 		{
-			PWCHAR resultFileName = PathFindFileNameW(path);
+			LPWSTR resultFileName = PathFindFileNameW(path);
 			if ((DWORD)lstrlenW(resultFileName) <= fileNameLength)
 			{
 				StrCpyW(fileName, resultFileName);

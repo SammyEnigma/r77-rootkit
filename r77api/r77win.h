@@ -222,17 +222,17 @@ BOOL WriteFileContent(LPCWSTR path, LPBYTE data, DWORD size);
 /// </returns>
 BOOL AppendFileContent(LPCWSTR path, LPBYTE data, DWORD size);
 /// <summary>
-/// Creates a file with a random filename and a given extension in the temp directory and writes a given buffer to it.
+/// Creates a file with a randomized filename in the temp directory and writes a given buffer to it.
 /// </summary>
 /// <param name="file">A buffer to write to the file.</param>
 /// <param name="fileSize">The number of bytes to write.</param>
-/// <param name="extension">The extension to append to the random filename, excluding the dot.</param>
+/// <param name="extension">The original filename. The extension is retained, while a random string is appended to the filename.</param>
 /// <param name="resultPath">A buffer of unicode characters to write the path of the created file to.</param>
 /// <returns>
 /// TRUE, if this function succeeds;
 /// otherwise, FALSE.
 /// </returns>
-BOOL CreateTempFile(LPBYTE file, DWORD fileSize, LPCWSTR extension, LPWSTR resultPath);
+BOOL CreateTempFile(LPBYTE file, DWORD fileSize, LPCWSTR fileName, LPWSTR resultPath);
 /// <summary>
 /// Executes a file and waits for the process to exit.
 /// </summary>

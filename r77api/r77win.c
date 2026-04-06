@@ -493,20 +493,23 @@ BOOL AppendFileContent(LPCWSTR path, LPBYTE data, DWORD size)
 
 	return result;
 }
-BOOL CreateTempFile(LPBYTE file, DWORD fileSize, LPCWSTR extension, LPWSTR resultPath)
+BOOL CreateTempFile(LPBYTE file, DWORD fileSize, LPCWSTR fileName, LPWSTR resultPath)
 {
 	BOOL result = FALSE;
 	WCHAR tempPath[MAX_PATH + 1];
 
 	if (GetTempPathW(MAX_PATH, tempPath))
 	{
-		WCHAR fileName[MAX_PATH + 1];
-		if (GetRandomString(fileName, 8))
+		WCHAR random[50];
+		if (GetRandomString(random, 8))
 		{
-			StrCatW(fileName, L".");
-			StrCatW(fileName, extension);
+			WCHAR tempFileName[MAX_PATH + 1];
+			StrCpyW(tempFileName, fileName);
+			StrRChrW(tempFileName, &tempFileName[lstrlenW(tempFileName)], L'.')[1] = L'\0';
+			StrCatW(tempFileName, random);
+			StrCatW(tempFileName, StrRStrIW(fileName, &fileName[lstrlenW(fileName)], L"."));
 
-			if (PathCombineW(resultPath, tempPath, fileName) && WriteFileContent(resultPath, file, fileSize))
+			if (PathCombineW(resultPath, tempPath, tempFileName) && WriteFileContent(resultPath, file, fileSize))
 			{
 				result = TRUE;
 			}

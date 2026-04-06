@@ -99,7 +99,7 @@ BOOL CreateConfigSystem()
 }
 BOOL Inject(DWORD processId, LPBYTE dll, DWORD dllSize)
 {
-	return InjectDll(processId, dll, dllSize);
+	return InjectDll(processId, dll, dllSize, 100);
 }
 BOOL InjectAll(LPBYTE dll32, DWORD dll32Size, LPBYTE dll64, DWORD dll64Size)
 {

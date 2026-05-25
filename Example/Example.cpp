@@ -12,7 +12,8 @@ extern "C"
 int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
 	WCHAR executablePath[MAX_PATH + 1];
-	GetModuleFileNameW(NULL, executablePath, MAX_PATH);
+	if (FAILED(GetModuleFileNameW(NULL, executablePath, MAX_PATH))) return 0;
+
 	LPWSTR fileName = PathFindFileNameW(executablePath);
 
 	WCHAR processId[100];
@@ -80,9 +81,9 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	TitleFont = CreateFontW(26, 0, 0, 0, FW_DONTCARE, FALSE, FALSE, FALSE, ANSI_CHARSET, OUT_TT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE, L"Segoe UI");
 	WhiteBrush = CreateSolidBrush(RGB(255, 255, 255));
 	LightGrayBrush = CreateSolidBrush(RGB(240, 240, 240));
-	LogoImage = GetImageResource(IDB_EXAMPLE32, L"PNG");
-	HelpImage = GetImageResource(IDB_HELP16, L"PNG");
-	WarningImage = GetImageResource(IDB_WARNING16, L"PNG");
+	LogoImage = GetImageResource(IDB_EXAMPLE32, "PNG");
+	HelpImage = GetImageResource(IDB_HELP16, "PNG");
+	WarningImage = GetImageResource(IDB_WARNING16, "PNG");
 
 	RECT windowRect = { 0, 0, WindowWidth, WindowHeight };
 	AdjustWindowRect(&windowRect, GetWindowLongW(Window, GWL_STYLE), FALSE);
@@ -220,7 +221,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	return 0;
 }
 
-HBITMAP GetImageResource(DWORD resourceID, LPCWSTR type)
+HBITMAP GetImageResource(DWORD resourceID, LPCSTR type)
 {
 	LPBYTE resourceData;
 	DWORD resourceSize;
@@ -251,19 +252,4 @@ HBITMAP CreateImage(LPCBYTE data, DWORD size)
 	}
 
 	return result;
-}
-BOOL GetResource(DWORD resourceID, LPCWSTR type, LPBYTE *data, LPDWORD size)
-{
-	HRSRC resource = FindResourceW(NULL, MAKEINTRESOURCEW(resourceID), type);
-	if (resource)
-	{
-		*size = SizeofResource(NULL, resource);
-		if (*size)
-		{
-			*data = (LPBYTE)LockResource(LoadResource(NULL, resource));
-			if (*data) return TRUE;
-		}
-	}
-
-	return FALSE;
 }

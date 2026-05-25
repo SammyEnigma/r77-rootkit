@@ -9,12 +9,15 @@ int main()
 
 	WCHAR applicationDirectory[MAX_PATH + 1];
 	WCHAR targetPath[MAX_PATH + 1];
-
-	if (FAILED(GetModuleFileNameW(NULL, applicationDirectory, MAX_PATH))) return 1;
-	if (!PathRemoveFileSpecW(applicationDirectory)) return 1;
-
 	LPCWSTR targetFileName = Is64BitOperatingSystem() ? L"TestConsole\\x64\\TestConsole.exe" : L"TestConsole\\x86\\TestConsole.exe";
-	if (!PathCombineW(targetPath, applicationDirectory, targetFileName)) return 1;
+
+	if (FAILED(GetModuleFileNameW(NULL, applicationDirectory, MAX_PATH)) ||
+		!PathRemoveFileSpecW(applicationDirectory) ||
+		!PathCombineW(targetPath, applicationDirectory, targetFileName))
+	{
+		MessageBoxW(NULL, L"Error", L"Test Console", MB_OK | MB_ICONHAND);
+		return 0;
+	}
 
 	if (!PathFileExistsW(targetPath))
 	{
@@ -24,7 +27,7 @@ int main()
 		StrCatW(message, L"' not found.");
 
 		MessageBoxW(NULL, message, L"Test Console", MB_OK | MB_ICONHAND);
-		return 1;
+		return 0;
 	}
 
 	STARTUPINFOW startupInfo;
@@ -33,7 +36,12 @@ int main()
 	i_memset(&processInformation, 0, sizeof(PROCESS_INFORMATION));
 	startupInfo.cb = sizeof(startupInfo);
 
-	if (!CreateProcessW(targetPath, NULL, NULL, NULL, FALSE, 0, NULL, NULL, &startupInfo, &processInformation)) return 1;
+	if (!CreateProcessW(targetPath, NULL, NULL, NULL, FALSE, 0, NULL, NULL, &startupInfo, &processInformation))
+	{
+		MessageBoxW(NULL, L"Error", L"Test Console", MB_OK | MB_ICONHAND);
+		return 0;
+	}
+
 	CloseHandle(processInformation.hThread);
 	CloseHandle(processInformation.hProcess);
 

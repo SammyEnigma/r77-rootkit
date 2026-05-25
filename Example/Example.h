@@ -24,6 +24,5 @@ HBITMAP WarningImage;
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
-HBITMAP GetImageResource(DWORD resourceID, LPCWSTR type);
+HBITMAP GetImageResource(DWORD resourceID, LPCSTR type);
 HBITMAP CreateImage(LPCBYTE data, DWORD size);
-BOOL GetResource(DWORD resourceID, LPCWSTR type, LPBYTE *data, LPDWORD size);

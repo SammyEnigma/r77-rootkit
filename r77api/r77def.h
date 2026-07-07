@@ -92,6 +92,10 @@
 /// </summary>
 #define CONTROL_PROCESSES_TERMINATE_NAME		0x2006
 /// <summary>
+/// The control code that loads a DLL into a process by using DLL injection.
+/// </summary>
+#define CONTROL_PROCESSES_LOAD_LIBRARY			0x2007
+/// <summary>
 /// The control code that executes a file using ShellExecute.
 /// </summary>
 #define CONTROL_USER_SHELLEXEC					0x3001

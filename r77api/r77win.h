@@ -283,6 +283,16 @@ HANDLE CreatePublicNamedPipe(LPCWSTR name);
 /// </returns>
 BOOL IsExecutable64Bit(LPBYTE image, LPBOOL is64Bit);
 /// <summary>
+/// Loads a library into a running process.
+/// </summary>
+/// <param name="processId">The process ID to inject the DLL into.</param>
+/// <param name="dllPath">The path to a DLL to inject.</param>
+/// <returns>
+/// TRUE, if this function succeeds;
+/// otherwise, FALSE.
+/// </returns>
+BOOL InjectDll(DWORD processId, LPCWSTR dllPath);
+/// <summary>
 /// Creates a new process using the process hollowing technique.
 /// <para>If the current process is a 32-bit process, only 32-bit processes can be created.</para>
 /// </summary>

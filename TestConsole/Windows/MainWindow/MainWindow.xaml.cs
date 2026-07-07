@@ -23,5 +23,6 @@ public partial class MainWindow : UiApplicationWindow
 	public void OpenControlPipeTabPage()
 	{
 		ControlPipeTabPage.IsSelected = true;
+		MainTabControl.Focus();
 	}
 }

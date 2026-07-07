@@ -24,7 +24,7 @@ int main()
 		WCHAR message[1000];
 		StrCpyW(message, L"File '");
 		StrCatW(message, targetFileName);
-		StrCatW(message, L"' not found.");
+		StrCatW(message, L"' not found.\r\n\r\nIf you built the Solution, remember to run the publish profile of the TestConsole project.");
 
 		MessageBoxW(NULL, message, L"Test Console", MB_OK | MB_ICONHAND);
 		return 0;

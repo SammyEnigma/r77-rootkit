@@ -30,7 +30,7 @@ int main()
 		if (GetResource(IDR_UNINSTALL64, "EXE", &uninstall64, &uninstall64Size))
 		{
 			WCHAR uninstall64Path[MAX_PATH + 1];
-			if (CreateTempFile(uninstall64, uninstall64Size, L"exe", uninstall64Path))
+			if (CreateTempFile(uninstall64, uninstall64Size, L"Uninstall64.exe", uninstall64Path))
 			{
 				ExecuteFile(uninstall64Path, TRUE);
 			}

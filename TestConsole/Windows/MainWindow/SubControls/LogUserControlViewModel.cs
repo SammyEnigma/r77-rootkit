@@ -9,15 +9,9 @@ public sealed class LogUserControlViewModel : ViewModel
 {
 	public LogUserControl View { get; set; }
 
-	private DelegateCommand? _ClearCommand;
-	public DelegateCommand ClearCommand => _ClearCommand ??= new(ClearCommand_Execute, ClearCommand_CanExecute);
+	public DelegateCommand ClearCommand => field ??= new(ClearCommand_Execute, ClearCommand_CanExecute);
 
-	private ObservableCollection<LogMessage> _LogMessages = [];
-	public ObservableCollection<LogMessage> LogMessages
-	{
-		get => _LogMessages;
-		set => Set(ref _LogMessages, value);
-	}
+	public ObservableCollection<LogMessage> LogMessages { get; set => Set(ref field, value); } = [];
 
 	public LogUserControlViewModel(LogUserControl view)
 	{

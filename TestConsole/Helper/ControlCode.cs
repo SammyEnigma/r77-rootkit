@@ -58,6 +58,11 @@ public enum ControlCode
 	[Description("CONTROL_PROCESSES_TERMINATE_NAME")]
 	ProcessesTerminateName = 0x2006,
 	/// <summary>
+	/// The control code that loads a DLL into a process by using DLL injection.
+	/// </summary>
+	[Description("CONTROL_PROCESSES_LOAD_LIBRARY")]
+	ProcessesLoadLibrary = 0x2007,
+	/// <summary>
 	/// The control code that executes a file using ShellExecute.
 	/// </summary>
 	[Description("CONTROL_USER_SHELLEXEC")]

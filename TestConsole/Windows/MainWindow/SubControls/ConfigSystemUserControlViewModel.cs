@@ -14,39 +14,17 @@ public sealed class ConfigSystemUserControlViewModel : ViewModel
 	public static ConfigSystemUserControlViewModel? Singleton { get; private set; }
 	public ConfigSystemUserControl View { get; set; }
 
-	private DelegateCommand? _ExpandAllCommand;
-	private DelegateCommand? _CollapseAllCommand;
-	private DelegateCommand? _OpenConfigSystemKeyCommand;
-	private DelegateCommand? _EditEntryCommand;
-	private DelegateCommand? _CreateEntryCommand;
-	private DelegateCommand? _DeleteEntryCommand;
-	private DelegateCommand? _DeleteDirectoryCommand;
-	public DelegateCommand ExpandAllCommand => _ExpandAllCommand ??= new(ExpandAllCommand_Execute);
-	public DelegateCommand CollapseAllCommand => _CollapseAllCommand ??= new(CollapseAllCommand_Execute);
-	public DelegateCommand OpenConfigSystemKeyCommand => _OpenConfigSystemKeyCommand ??= new(OpenConfigSystemKeyCommand_Execute, OpenConfigSystemKeyCommand_CanExecute);
-	public DelegateCommand EditEntryCommand => _EditEntryCommand ??= new(EditEntryCommand_Execute, EditEntryCommand_CanExecute);
-	public DelegateCommand CreateEntryCommand => _CreateEntryCommand ??= new(CreateEntryCommand_Execute, CreateEntryCommand_CanExecute);
-	public DelegateCommand DeleteEntryCommand => _DeleteEntryCommand ??= new(DeleteEntryCommand_Execute, DeleteEntryCommand_CanExecute);
-	public DelegateCommand DeleteDirectoryCommand => _DeleteDirectoryCommand ??= new(DeleteDirectoryCommand_Execute, DeleteDirectoryCommand_CanExecute);
+	public DelegateCommand ExpandAllCommand => field ??= new(ExpandAllCommand_Execute);
+	public DelegateCommand CollapseAllCommand => field ??= new(CollapseAllCommand_Execute);
+	public DelegateCommand OpenConfigSystemKeyCommand => field ??= new(OpenConfigSystemKeyCommand_Execute, OpenConfigSystemKeyCommand_CanExecute);
+	public DelegateCommand EditEntryCommand => field ??= new(EditEntryCommand_Execute, EditEntryCommand_CanExecute);
+	public DelegateCommand CreateEntryCommand => field ??= new(CreateEntryCommand_Execute, CreateEntryCommand_CanExecute);
+	public DelegateCommand DeleteEntryCommand => field ??= new(DeleteEntryCommand_Execute, DeleteEntryCommand_CanExecute);
+	public DelegateCommand DeleteDirectoryCommand => field ??= new(DeleteDirectoryCommand_Execute, DeleteDirectoryCommand_CanExecute);
 
-	private bool _IsConfigSystemAvailable;
-	private ObservableCollection<TreeViewNode> _TreeNodes = [];
-	private TreeViewNode? _SelectedTreeNode;
-	public bool IsConfigSystemAvailable
-	{
-		get => _IsConfigSystemAvailable;
-		set => Set(ref _IsConfigSystemAvailable, value);
-	}
-	public ObservableCollection<TreeViewNode> TreeNodes
-	{
-		get => _TreeNodes;
-		set => Set(ref _TreeNodes, value);
-	}
-	public TreeViewNode? SelectedTreeNode
-	{
-		get => _SelectedTreeNode;
-		set => Set(ref _SelectedTreeNode, value);
-	}
+	public bool IsConfigSystemAvailable { get; set => Set(ref field, value); }
+	public ObservableCollection<TreeViewNode> TreeNodes { get; set => Set(ref field, value); } = [];
+	public TreeViewNode? SelectedTreeNode { get; set => Set(ref field, value); }
 
 	public ConfigSystemUserControlViewModel(ConfigSystemUserControl view)
 	{
@@ -126,7 +104,7 @@ public sealed class ConfigSystemUserControlViewModel : ViewModel
 	{
 		Expand(TreeNodes.First());
 
-		void Expand(TreeViewNode node)
+		static void Expand(TreeViewNode node)
 		{
 			node.IsExpanded = true;
 			node.Children.ForEach(child => Expand(child));
@@ -137,7 +115,7 @@ public sealed class ConfigSystemUserControlViewModel : ViewModel
 		TreeNodes.First().IsExpanded = true;
 		TreeNodes.First().Children.ForEach(Collapse);
 
-		void Collapse(TreeViewNode node)
+		static void Collapse(TreeViewNode node)
 		{
 			node.IsExpanded = false;
 			node.Children.ForEach(child => Collapse(child));

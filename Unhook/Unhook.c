@@ -196,10 +196,10 @@ static BOOL SyscallReadFileContent(LPCWSTR path, LPBYTE *data, LPDWORD size)
 			byteOffset.QuadPart = 0;
 
 			i_memset(&ioStatusBlock, 0, sizeof(IO_STATUS_BLOCK));
-			if (SyscallNtReadFile(file, NULL, NULL, NULL, &ioStatusBlock, fileData, fileInfo.EndOfFile.QuadPart, &byteOffset, NULL) == ERROR_SUCCESS)
+			if (SyscallNtReadFile(file, NULL, NULL, NULL, &ioStatusBlock, fileData, (ULONG)fileInfo.EndOfFile.QuadPart, &byteOffset, NULL) == ERROR_SUCCESS)
 			{
 				*data = fileData;
-				if (size) *size = fileInfo.EndOfFile.QuadPart;
+				if (size) *size = (DWORD)fileInfo.EndOfFile.QuadPart;
 				result = TRUE;
 			}
 			else

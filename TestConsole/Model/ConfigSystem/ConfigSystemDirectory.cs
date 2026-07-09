@@ -14,7 +14,7 @@ public sealed class ConfigSystemDirectory
 	/// <summary>
 	/// Gets or sets a collection of entries in this directory.
 	/// </summary>
-	public ObservableCollection<ConfigSystemEntry> Entries { get; set; }
+	public ObservableCollection<ConfigSystemEntry> Entries { get; }
 
 	/// <summary>
 	/// Initializes a new instance of the <see cref="ConfigSystemDirectory" /> class.

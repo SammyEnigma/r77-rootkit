@@ -7,7 +7,7 @@
 #pragma warning(disable: 6258) // Using TerminateThread does not allow proper thread clean up.
 
 #define NEW(type) (type*)HeapAlloc(GetProcessHeap(), 0, sizeof(type))
-#define NEW_ARRAY(type, length) (type*)HeapAlloc(GetProcessHeap(), 0, sizeof(type) * (length))
+#define NEW_ARRAY(type, length) (type*)HeapAlloc(GetProcessHeap(), 0, sizeof(type) * (SIZE_T)(length))
 #define FREE(buffer) HeapFree(GetProcessHeap(), 0, buffer);
 
 #define i_memcpy(dest, src, count) __movsb((LPBYTE)(dest), (LPCBYTE)(src), (SIZE_T)(count))

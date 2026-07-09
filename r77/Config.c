@@ -12,6 +12,8 @@ VOID InitializeConfig()
 VOID UninitializeConfig()
 {
 	TerminateThread(ConfigThread, 0);
+	CloseHandle(ConfigThread);
+	ConfigThread = NULL;
 }
 static DWORD WINAPI UpdateConfigThread(LPVOID parameter)
 {

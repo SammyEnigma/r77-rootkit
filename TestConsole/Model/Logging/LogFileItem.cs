@@ -2,7 +2,7 @@
 
 public sealed class LogFileItem : LogItem
 {
-	public string FileName { get; private init; }
+	public string FileName { get; }
 
 	public LogFileItem(string fileName)
 	{

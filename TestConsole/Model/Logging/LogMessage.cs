@@ -4,10 +4,10 @@ namespace TestConsole.Model;
 
 public sealed class LogMessage
 {
-	public DateTime TimeStamp { get; private init; }
-	public LogMessageType Type { get; private init; }
-	public LogItem[] Items { get; private init; }
-	public string Text { get; private init; }
+	public DateTime TimeStamp { get; }
+	public LogMessageType Type { get; }
+	public LogItem[] Items { get; }
+	public string Text { get; }
 
 	public LogMessage(LogMessageType type, LogItem?[] items)
 	{

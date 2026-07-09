@@ -1,0 +1,78 @@
+<Solution>
+  <Folder Name="/Global/">
+    <File Path="Global/R77Const.cs" />
+  </Folder>
+  <Folder Name="/Install/">
+    <Project Path="Install/Install.vcxproj" Id="bce48dae-232e-4b3d-b5b5-d0b29bb7e9de">
+      <BuildDependency Project="BuildTask/BuildTask.csproj" />
+      <BuildDependency Project="Stager/Stager.csproj" />
+      <Platform Project="Win32" />
+    </Project>
+    <Project Path="InstallShellcode/InstallShellcode.vcxitems" Id="deab25fd-2042-4bd6-bf4b-0802dccc70f5" />
+    <Project Path="Service/Service.vcxitems" Id="46e171d4-1811-48be-8867-a63c28761d28" />
+    <Project Path="Service32/Service32.vcxproj" Id="7271afd1-10f6-4589-95b7-3abf98e7b2ca">
+      <BuildDependency Project="BuildTask/BuildTask.csproj" />
+      <Platform Project="Win32" />
+    </Project>
+    <Project Path="Service64/Service64.vcxproj" Id="e3104b33-db3d-4c83-b393-1e05e1ff2b10">
+      <BuildDependency Project="BuildTask/BuildTask.csproj" />
+    </Project>
+    <Project Path="Stager/Stager.csproj" Id="4d71336e-6ef6-4df1-8457-b94dc3d73fe7">
+      <BuildDependency Project="BuildTask/BuildTask.csproj" />
+      <BuildDependency Project="r77-x64/r77-x64.vcxproj" />
+      <BuildDependency Project="r77-x86/r77-x86.vcxproj" />
+      <BuildDependency Project="Service32/Service32.vcxproj" />
+      <BuildDependency Project="Service64/Service64.vcxproj" />
+    </Project>
+  </Folder>
+  <Folder Name="/Rootkit/">
+    <Project Path="r77-x64/r77-x64.vcxproj" Id="06af1d64-f2fc-4767-8794-7313c7bb0a40">
+      <BuildDependency Project="BuildTask/BuildTask.csproj" />
+      <BuildType Project="Release" />
+    </Project>
+    <Project Path="r77-x86/r77-x86.vcxproj" Id="1ba54a13-b390-47b3-9628-b58a2bba193b">
+      <BuildDependency Project="BuildTask/BuildTask.csproj" />
+      <BuildType Project="Release" />
+      <Platform Project="Win32" />
+    </Project>
+    <Project Path="r77/r77.vcxitems" Id="6e4bb100-c3c9-4cf7-a637-08c2482c6b94" />
+    <Project Path="r77api/r77api.vcxitems" Id="525fd9eb-628a-4d93-b320-3c1dfa0a216d" />
+    <Project Path="ReflectiveDllMain/ReflectiveDllMain.vcxitems" Id="beabb20f-6030-4275-a8cf-56245417f4b1" />
+    <Project Path="Unhook/Unhook.vcxitems" Id="631adcf8-7809-4c45-b29a-30ecf33592d6" />
+  </Folder>
+  <Folder Name="/TestEnvironment/">
+    <Project Path="Example/Example.vcxproj" Id="6d733fe8-f47f-48c7-a43b-afb60618dfd7">
+      <Platform Solution="Release|*" Project="Win32" />
+    </Project>
+    <Project Path="Helper/Helper.vcxitems" Id="e6543f7a-4e58-4c55-975e-ed975481ebe8" />
+    <Project Path="Helper32/Helper32.vcxproj" Id="2d6fdd44-39b1-4ff8-8ae0-60a6b0979f5f">
+      <BuildType Project="Release" />
+      <Platform Project="Win32" />
+    </Project>
+    <Project Path="Helper64/Helper64.vcxproj" Id="78bb6d02-6e02-4933-89dc-4ad8ee0b303f">
+      <BuildType Project="Release" />
+    </Project>
+    <Project Path="TestConsole/TestConsole.csproj">
+      <BuildDependency Project="BuildTask/BuildTask.csproj" />
+      <BuildDependency Project="Helper32/Helper32.vcxproj" />
+      <BuildDependency Project="Helper64/Helper64.vcxproj" />
+      <BuildDependency Project="r77-x64/r77-x64.vcxproj" />
+      <BuildDependency Project="r77-x86/r77-x86.vcxproj" />
+    </Project>
+    <Project Path="TestConsoleLauncher/TestConsoleLauncher.vcxproj" Id="13b1ee6d-07c1-43c5-ac52-d1ca18411f30">
+      <BuildDependency Project="BuildTask/BuildTask.csproj" />
+      <Platform Project="Win32" />
+    </Project>
+  </Folder>
+  <Folder Name="/Uninstall/">
+    <Project Path="Uninstall/Uninstall.vcxproj" Id="f0005d08-6278-4bfe-b492-f86ccec797d5">
+      <BuildDependency Project="BuildTask/BuildTask.csproj" />
+      <BuildDependency Project="Uninstall64/Uninstall64.vcxproj" />
+      <Platform Project="Win32" />
+    </Project>
+    <Project Path="Uninstall64/Uninstall64.vcxproj" Id="00d7268a-92a9-4cd4-addf-175e9bf16ae0">
+      <BuildDependency Project="BuildTask/BuildTask.csproj" />
+    </Project>
+  </Folder>
+  <Project Path="BuildTask/BuildTask.csproj" />
+</Solution>

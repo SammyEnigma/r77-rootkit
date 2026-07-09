@@ -110,7 +110,10 @@ BOOL WINAPI ReflectiveDllMain(LPBYTE dllBase)
 			ntFlushInstructionCache(INVALID_HANDLE_VALUE, NULL, 0);
 
 			// Call actual DllMain.
-			return dllMain((HINSTANCE)allocatedMemory, DLL_PROCESS_ATTACH, NULL);
+			return dllMain((HINSTANCE)allocatedMemory, DLL_PROCESS_ATTACH, dllBase);
+
+			// Pass dllBase as the "reserved" parameter, so it can be freed in DllMain after ReflectiveDllMain returns.
+			// This is recommended, because this shellcode is loaded in an RWX memory region that is no longer needed after the DLL is loaded.
 		}
 	}
 
